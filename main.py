@@ -144,7 +144,7 @@ class _WeightedVertex(_Vertex):
     """
     item: Any
     kind: str
-    neighbours: dict[_WeightedVertex, Union[int, float]]
+    neighbours: dict[_WeightedVertex, int | float]
 
     def __init__(self, item: Any, kind: str) -> None:
         """Initialize a new vertex with the given item and kind.
@@ -216,7 +216,7 @@ class WeightedGraph(Graph):
         if item not in self._vertices:
             self._vertices[item] = _WeightedVertex(item, kind)
 
-    def add_edge(self, item1: Any, item2: Any, weight: Union[int, float] = 1) -> None:
+    def add_edge(self, item1: Any, item2: Any, weight: int | float = 1) -> None:
         """Add an edge between the two vertices with the given items in this graph,
         with the given weight.
 
