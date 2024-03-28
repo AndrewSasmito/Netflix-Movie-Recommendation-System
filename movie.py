@@ -4,7 +4,7 @@ This is the graph implementation file of the Netflix Movie Recommendation System
 Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
 """
 from __future__ import annotations
-
+import csv
 
 class _Movie:
     """A vertex in a weighted movie network graph, used to represent a movie.
@@ -65,10 +65,35 @@ class Network:
         """
         if title not in self._movies:
             self._movies[title] = _Movie(title)
-            self._communities[title].add(_Movie(title))
+            self._communities[title] = {_Movie(title)}
 
-    def add_edge(self, title1: str, title2: str, weight: int | float = 1) -> None:
+    def add_edge(self, title1: str, title2: str, weight: int | float = 0) -> None:
         """Add an edge between the two movies with the given titles in this graph,
+        with the given weight.
+
+        Do nothing if there is already an edge between the two movies.
+
+        Raise a ValueError if item1 or item2 do not appear as movies in this graph.
+
+        Preconditions:
+            - item1 != item2
+        """
+        if title1 in self._movies and title2 in self._movies:
+            if self._movies[title2] in self.get_neighbours(title1):
+                return
+
+            m1 = self._movies[title1]
+            m2 = self._movies[title2]
+
+            # Add the new edge
+            m1.neighbours[m2] = weight
+            m2.neighbours[m1] = weight
+        else:
+            # We didn't find an existing movie for both items.
+            raise ValueError
+
+    def increment_edge(self, title1: str, title2: str, weight: float) -> None:
+        """Increment the edge weight between the two movies with the given titles in this graph,
         with the given weight.
 
         Raise a ValueError if item1 or item2 do not appear as movies in this graph.
@@ -80,9 +105,9 @@ class Network:
             m1 = self._movies[title1]
             m2 = self._movies[title2]
 
-            # Add the new edge
-            m1.neighbours[m2] = weight
-            m2.neighbours[m1] = weight
+            # Increment the new edge
+            m1.neighbours[m2] += weight
+            m2.neighbours[m1] += weight
         else:
             # We didn't find an existing movie for both items.
             raise ValueError
@@ -148,3 +173,43 @@ class Network:
                 density += u.neighbours[v]
 
         return 2 * density / (len(self._movies.keys()) * (len(self._movies.keys()) - 1))
+
+
+def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> Network:
+    """
+    Load a weighted review_graph
+    """
+    graph = Network()
+    with open(reviews_file_path, 'r') as reviews_file, open(movies_file_path, 'r') as movies_file:
+        next(movies_file)
+        movies_dict: dict[int, str] = {}
+        for line in csv.reader(movies_file):
+            movies_dict[int(line[0])] = line[2]
+            graph.add_movie(movies_dict[int(line[0])])
+
+        print("first")
+
+        next(reviews_file)
+        users = {}
+        cnt1 = 0
+        for line in csv.reader(reviews_file):
+            customer, rating, date, movie = line
+            if customer not in users:
+                users[customer] = []
+            if cnt1 % 10000000 == 0:
+                print(f'cnt1: {cnt1}')
+            cnt1 += 1
+            users[customer].append((movies_dict[int(movie)], int(rating)))
+
+        cnt = 0
+        for user in users:
+            rating_dictionary = users[user]
+            for movie_index1 in range(len(rating_dictionary)):
+                for movie_index2 in range(movie_index1 + 1, len(rating_dictionary)):
+                    graph.add_edge(rating_dictionary[movie_index1][0], rating_dictionary[movie_index2][0])
+                    graph.increment_edge(rating_dictionary[movie_index1][0], rating_dictionary[movie_index2][0], 1 - abs(rating_dictionary[movie_index1][1] - rating_dictionary[movie_index2][1]) / 5)
+            if cnt % 10000 == 0:
+                print(f'cnt: {cnt}')
+            cnt += 1
+
+    return graph
