@@ -46,21 +46,26 @@ class Network:
     Private Instance Attributes:
         - _movies: A collection of the vertices contained in this graph,
             maps a movie title to a _Movie object.
+        - _community: A collection of vertices within a given community
     """
     _movies: dict[str, _Movie]
+    _communities: dict[str, set[_Movie]]
 
     def __init__(self) -> None:
         """Initialize an empty network graph (no vertices or edges)."""
         self._movies = {}
+        self._communities = {}
 
     def add_movie(self, title: str) -> None:
-        """Add a movie vertex with the given item to this graph.
+        """Add a movie vertex with the given item to this graph and
+        assign it to its own community.
 
         The new vertex is not adjacent to any other vertices.
         Do nothing if the given item is already in this graph.
         """
         if title not in self._movies:
             self._movies[title] = _Movie(title)
+            self._communities[title].add(_Movie(title))
 
     def add_edge(self, title1: str, title2: str, weight: int | float = 1) -> None:
         """Add an edge between the two movies with the given titles in this graph,
@@ -132,3 +137,14 @@ class Network:
     def get_all_vertices(self) -> set:
         """Return a set of all movies in this graph."""
         return set(self._movies.keys())
+
+    def density(self, community_name: str) -> float:
+        """Return the density of the community"""
+        movie_community = self._communities[community_name]
+        density = 0
+
+        for u in movie_community:
+            for v in u.neighbours:
+                density += u.neighbours[v]
+
+        return 2 * density / (len(self._movies.keys()) * (len(self._movies.keys()) - 1))
