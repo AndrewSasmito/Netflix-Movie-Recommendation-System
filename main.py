@@ -5,6 +5,7 @@ Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Projec
 """
 from __future__ import annotations
 from typing import Any
+import csv
 
 
 class _Vertex:
@@ -307,8 +308,17 @@ class WeightedGraph(Graph):
         ...
 
 
-def load_weighted_review_graph(reviews_file: str, movies_file: str) -> WeightedGraph:
-    ...
+def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> WeightedGraph:
+    graph = WeightedGraph()
+    with open(reviews_file_path, 'r') as reviews_file, open(movies_file_path, 'r') as movies_file:
+        next(movies_file)
+        movies_dict: dict[int, str] = {}
+        for line in csv.reader(movies_file):
+            movies_dict[int(line[0])] = line[2]
+
+        for line in csv.reader(reviews_file):
+            ...
+    return graph
 
 
 if __name__ == "__main__":
