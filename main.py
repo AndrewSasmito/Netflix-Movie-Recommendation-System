@@ -9,20 +9,18 @@ import csv
 
 
 class _Vertex:
-    """A vertex in a book review graph, used to represent a user or a book.
+    """A vertex in a movie review graph, used to represent a movie.
 
-    Each vertex item is either a user id or book title. Both are represented as strings,
-    even though we've kept the type annotation as Any to be consistent with lecture.
+    Each vertex item is a movie title. It is represented as a string
+    although though we've kept the type annotation as Any to be flexible.
 
     Instance Attributes:
-        - item: The data stored in this vertex, representing a user or book.
-        - kind: The type of this vertex: 'user' or 'book'.
+        - item: The data stored in this vertex, representing a movie title.
         - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
         - self not in self.neighbours
         - all(self in u.neighbours for u in self.neighbours)
-        - self.kind in {'user', 'book'}
     """
     item: Any
     kind: str
@@ -34,7 +32,7 @@ class _Vertex:
         This vertex is initialized with no neighbours.
 
         Preconditions:
-            - kind in {'user', 'book'}
+            - kind in {'user', 'movie'}
         """
         self.item = item
         self.kind = kind
@@ -46,7 +44,7 @@ class _Vertex:
 
 
 class Graph:
-    """A graph used to represent a book review network.
+    """A graph used to represent a movie review network.
     """
     # Private Instance Attributes:
     #     - _vertices:
@@ -65,7 +63,7 @@ class Graph:
         Do nothing if the given item is already in this graph.
 
         Preconditions:
-            - kind in {'user', 'book'}
+            - kind in {'user', 'movie'}
         """
         if item not in self._vertices:
             self._vertices[item] = _Vertex(item, kind)
@@ -117,7 +115,7 @@ class Graph:
         If kind != '', only return the items of the given vertex kind.
 
         Preconditions:
-            - kind in {'', 'user', 'book'}
+            - kind in {'', 'user', 'movie'}
         """
         if kind != '':
             return {v.item for v in self._vertices.values() if v.kind == kind}
@@ -126,7 +124,7 @@ class Graph:
 
 
 class _WeightedVertex(_Vertex):
-    """A vertex in a weighted book review graph, used to represent a user or a book.
+    """A vertex in a weighted movie review graph, used to represent a user or a book.
 
     Same documentation as _Vertex from Exercise 3, except now neighbours is a dictionary mapping
     a neighbour vertex to the weight of the edge to from self to that neighbour.
@@ -237,7 +235,7 @@ class WeightedGraph(Graph):
             # We didn't find an existing vertex for both items.
             raise ValueError
 
-    def get_weight(self, item1: Any, item2: Any) -> Union[int, float]:
+    def get_weight(self, item1: Any, item2: Any) -> int | float:
         """Return the weight of the edge between the given items.
 
         Return 0 if item1 and item2 are not adjacent.
