@@ -1,7 +1,7 @@
 """TODO: EMPTY DOCSTRING"""
 
-import movie
-def density(graph: movie.Network, community_name: str) -> float:
+import movie_class
+def density(graph: movie_class.Network, community_name: str) -> float:
     """Return the density of the community"""
     # TODO: MOVE THIS FUNCTION TO THE CLUSTERING FILE??
     movie_community = graph.get_communities()[community_name]
