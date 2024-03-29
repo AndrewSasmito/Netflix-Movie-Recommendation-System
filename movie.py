@@ -257,6 +257,9 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
                 user_ratings[customer].append((movies_dict[int(movie)], int(rating)))  # adding tuple of (movie, rating)
                 rating_counter += 1
 
+                # if rating_counter % 10000 == 0:
+                #     print(f'cnt: {rating_counter}')
+
                 if rating_counter == 1000000:
                     break
         print('second')
@@ -273,10 +276,13 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
                     movie1, movie2 = movies_rated[i1][0], movies_rated[i2][0]
                     weight = determine_edge_weight(movies_rated[i1][1], movies_rated[i2][1])
 
-                    graph.add_edge(movie1, movie2, weight)
-                    graph.increment_edge(movie1, movie2,  weight)
-                    if graph.get_weight(movie1, movie2) == 0:   # ensures there are no edges with 0 weight
-                        graph.remove_edge(movie1, movie2)
+                    if weight > 0 and graph.adjacent(movie1, movie2):
+                        graph.increment_edge(movie1, movie2, weight)
+                    elif weight > 0:
+                        graph.add_edge(movie1, movie2, weight)
+                    # graph.increment_edge(movie1, movie2, weight)
+                    # if graph.get_weight(movie1, movie2) == 0:   # ensures there are no edges with 0 weight
+                    #     graph.remove_edge(movie1, movie2)
             if cnt % 10000 == 0:
                 print(f'cnt: {cnt}')
             cnt += 1
