@@ -37,7 +37,7 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
 
         # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
 
-        print("first")
+        # print("first")
 
         # print(movies_dict)
 
@@ -69,7 +69,7 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
 
                 if rating_counter == 1000000:
                     break
-        print('second')
+        # print('second')
 
         cnt = 0
         # if ~500,000 users, 2 ratings per user, 2 x 10^ 6. If 1 user, 1,000,000 per user (impossible if we assume
@@ -90,8 +90,8 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
                     # graph.increment_edge(movie1, movie2, weight)
                     # if graph.get_weight(movie1, movie2) == 0:   # ensures there are no edges with 0 weight
                     #     graph.remove_edge(movie1, movie2)
-            if cnt % 10000 == 0:
-                print(f'cnt: {cnt}')
-            cnt += 1
+            # if cnt % 10000 == 0:
+            #     print(f'cnt: {cnt}')
+            # cnt += 1
 
     return graph
