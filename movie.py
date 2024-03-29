@@ -39,11 +39,6 @@ class _Movie:
         """Return the degree of this vertex."""
         return len(self.neighbours)
 
-    def adjacent(self, other: _Movie) -> bool:
-        """Return whether two movies are neighbours
-        """
-        return other in self.neighbours
-
 
 class Network:
     """An implementation of a movie network graph.
