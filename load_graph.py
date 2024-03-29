@@ -4,10 +4,18 @@ import csv
 import movie_class
 
 
-def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> Network:
+def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
+    """Determine the edge weight to increment the weight between movies by. The idea is that if a given user
+    gives a pair of movies the exact same rating, the 'correlation' between the movies is exact and we increment
+    edge weight by 1. If a user rates a movie 5 stars and another movie 0 stars, increment the weight by 0
+    The below formula captures this premise"""
+
+    return 1 - abs(rating1 - rating2) / 5
+
+
+def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> movie_class.Network:
     """
     Load a weighted review_graph
-    TODO: SHOULD WE MOVE THIS INTO A FILE EXPLICITLY FOR LOADING DATA SINCE ITS A FUNCTION ANYWAYS??
     """
     graph = movie_class.Network()   # creates a new empty graph
 
