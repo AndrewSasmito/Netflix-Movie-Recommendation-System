@@ -98,6 +98,29 @@ class Network:
             # We didn't find an existing movie for both items.
             raise ValueError
 
+    def remove_edge(self, title1: str, title2: str) -> None:
+        """Remove an edge between the two movies with the given titles in this graph.
+
+        Raise a ValueError if item1 or item2 do not appear as movies in this graph.
+        Assumes if they are neigbhours, then m2 in m1.neighbours and m1 in m2.neighbours
+        Preconditions:
+            - item1 != item2
+            - an edge exists between the two movies
+        """
+        if title1 in self._movies and title2 in self._movies:
+            if self._movies[title2] in self.get_neighbours(title1):
+                m1.
+
+            m1 = self._movies[title1]
+            m2 = self._movies[title2]
+
+            # Add the new edge
+            m1.neighbours.pop(m2)
+            m2.neighbours.pop(m1)
+        else:
+            # We didn't find an existing movie for both items.
+            raise ValueError
+
     def increment_edge(self, title1: str, title2: str, weight: float) -> None:
         """Increment the edge weight between the two movies with the given titles in this graph,
         with the given weight.
@@ -180,6 +203,8 @@ class Network:
         return set(self._movies.keys())
 
 
+def determine_edge_weight()
+
 def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> Network:
     """
     Load a weighted review_graph
@@ -204,10 +229,11 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
 
         # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
 
-        print("first")
+        # print("first")
 
-        next(reviews_file)
-        users = {}      # users represents: dict[userid, list[movies watched]]
+        next(reviews_file) # skips first row because its a header
+
+        user_ratings = {}      # users represents: dict[userid, list[movies watched]]
         rating_counter = 0      # want to get 1,000,000 valid ratings
         for line in csv.reader(reviews_file):
             #   int (custid),rating(1-5),date, int( movieid)
@@ -217,25 +243,25 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
                 pass
             else:
 
-                if customer not in users:   # if we haven't seen this customer before, add them to dictionary
-                    users[customer] = []
+                if customer not in user_ratings:   # if we haven't seen this customer before, add them to dictionary
+                    user_ratings[customer] = []
 
                 # if cnt1 % 10000000 == 0:
                 #     print(f'cnt1: {cnt1}')
                 # cnt1 += 1
-                users[customer].append((movies_dict[int(movie)], int(rating)))  # adding tuple of (movie, rating)
+                user_ratings[customer].append((movies_dict[int(movie)], int(rating)))  # adding tuple of (movie, rating)
                 rating_counter += 1
 
                 if rating_counter == 1000000:
                     break
 
         cnt = 0
-        for user in users:
-            rating_dictionary = users[user]
-            for movie_index1 in range(len(rating_dictionary)):
-                for movie_index2 in range(movie_index1 + 1, len(rating_dictionary)):
-                    graph.add_edge(rating_dictionary[movie_index1][0], rating_dictionary[movie_index2][0])
-                    graph.increment_edge(rating_dictionary[movie_index1][0], rating_dictionary[movie_index2][0], 1 - abs(rating_dictionary[movie_index1][1] - rating_dictionary[movie_index2][1]) / 5)
+        for user in user_ratings:
+            movies_rated = user_ratings[user]
+            for i1 in range(len(movies_rated)):
+                for i2 in range(i1 + 1, len(movies_rated)):
+                    graph.add_edge(movies_rated[i1][0], movies_rated[i2][0])
+                    graph.increment_edge(movies_rated[i1][0], movies_rated[i2][0], 1 - abs(movies_rated[i1][1] - movies_rated[i2][1]) / 5)
             if cnt % 10000 == 0:
                 print(f'cnt: {cnt}')
             cnt += 1
