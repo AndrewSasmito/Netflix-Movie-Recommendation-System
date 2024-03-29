@@ -6,6 +6,7 @@ Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the seco
 from __future__ import annotations
 import csv
 
+
 class _Movie:
     """A vertex in a weighted movie network graph, used to represent a movie.
 
