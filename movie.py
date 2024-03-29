@@ -49,7 +49,10 @@ class Network:
         - _community: A collection of vertices within a given community
     """
     _movies: dict[str, _Movie]
-    _communities: dict[str, tuple[set[_Movie], int]]  # CHANGED TYPE TO tuple[set[vertices], numedged in community]
+    _communities: dict[str, tuple[set[_Movie], int]]  # CHANGED TYPE TO tuple[set[vertices], numedges in community]
+
+    # TODO: DO WE NEED TO KNOW WHAT THE EDGES IN THE SUBGRAPH ARE (EXTRA MEMORY), OR IS KNOWING THE NUMBER AND
+    # TODO: INCREMENTING SUFFICIENT?
 
     def __init__(self) -> None:
         """Initialize an empty network graph (no vertices or edges)."""
@@ -129,7 +132,7 @@ class Network:
 
     def average_weight(self, title: str) -> float:
         """Return the average weight of the edges adjacent to the movie corresponding to title.
-
+        TODO: IS THIS FUNCTION USEFUL??
         Raise ValueError if title does not correspond to a movie in the graph.
         """
         if title in self._movies:
@@ -168,19 +171,30 @@ class Network:
 
     def density(self, community_name: str) -> float:
         """Return the density of the community"""
+        # TODO: MOVE THIS FUNCTION TO THE CLUSTERING FILE??
         movie_community = self._communities[community_name]
-        density = 0
+        vertices = len(movie_community[0])  # total number of vertices in community, used to calculate max edges
+        edges = (movie_community[1])  # number of edges in community
 
-        for u in movie_community:
-            for v in u.neighbours:
-                density += u.neighbours[v]
+        return (2 * edges) / (vertices * (vertices - 1))
 
-        return 2 * density / (len(self._movies.keys()) * (len(self._movies.keys()) - 1))
+        # movie_community = self._communities[community_name][0]  # this is the set of all vertices in subgraph
+        # density = 0
+        #
+        # _communities: dict[str, tuple[set[_Movie], int]]
+        #
+        # for u in movie_community:
+        #     for v in movie_community:
+        #         if u in v.neighbours:
+        #             density += u.neighbours[v]
+        #
+        # return 2 * density / (len(self._movies.keys()) * (len(self._movies.keys()) - 1))
 
 
 def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> Network:
     """
     Load a weighted review_graph
+    TODO: SHOULD WE MOVE THIS INTO A FILE EXPLICITLY FOR LOADING DATA SINCE ITS A FUNCTION ANYWAYS??
     """
     graph = Network()   # creates a new empty graph
 
