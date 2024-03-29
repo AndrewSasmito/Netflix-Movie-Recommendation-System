@@ -141,6 +141,16 @@ class Network:
         else:
             raise ValueError
 
+    def get_movies(self) -> dict[str, _Movie]:
+        """Return the movies (vertices) that belong to the graph. We need a method since _movies
+        is a protected class"""
+        return self._movies
+        # TODO: SHOULD WE RETURN SELF.MOVIES.COPY()?? EXTRA SPACE COMPLEXITY BUT MAYBE UEFUL IDK
+
+    def get_communities(self) -> dict[str, tuple[set[_Movie], int]]:
+        """Return the communities found in the graph"""
+        return self._communities
+
     def adjacent(self, title1: str, title2: str) -> bool:
         """Return whether item1 and item2 are adjacent movies in this graph.
 
@@ -169,27 +179,6 @@ class Network:
         """Return a set of all movies in this graph."""
         return set(self._movies.keys())
 
-    def density(self, community_name: str) -> float:
-        """Return the density of the community"""
-        # TODO: MOVE THIS FUNCTION TO THE CLUSTERING FILE??
-        movie_community = self._communities[community_name]
-        vertices = len(movie_community[0])  # total number of vertices in community, used to calculate max edges
-        edges = (movie_community[1])  # number of edges in community
-
-        return (2 * edges) / (vertices * (vertices - 1))
-
-        # movie_community = self._communities[community_name][0]  # this is the set of all vertices in subgraph
-        # density = 0
-        #
-        # _communities: dict[str, tuple[set[_Movie], int]]
-        #
-        # for u in movie_community:
-        #     for v in movie_community:
-        #         if u in v.neighbours:
-        #             density += u.neighbours[v]
-        #
-        # return 2 * density / (len(self._movies.keys()) * (len(self._movies.keys()) - 1))
-
 
 def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> Network:
     """
@@ -211,23 +200,34 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
             if movie_counter == 1000:
                 break
 
-        print (graph)
+        print(graph.get_movies())
 
-        # NOTE: at this point, our graph has 1000 vertices, we now move on to the phase where we generate edged
+        # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
 
         print("first")
 
         next(reviews_file)
-        users = {}
-        cnt1 = 0
+        users = {}      # users represents: dict[userid, list[movies watched]]
+        rating_counter = 0      # want to get 1,000,000 valid ratings
         for line in csv.reader(reviews_file):
-            customer, rating, date, movie = line
-            if customer not in users:
-                users[customer] = []
-            if cnt1 % 10000000 == 0:
-                print(f'cnt1: {cnt1}')
-            cnt1 += 1
-            users[customer].append((movies_dict[int(movie)], int(rating)))
+            #   int (custid),rating(1-5),date, int( movieid)
+            customer, rating, _, movie = line   # replaced date with _ since we don't use it anyways
+
+            if movies_dict[movie] not in graph.get_movies():  # the user rates a movie we don't consider
+                pass
+            else:
+
+                if customer not in users:   # if we haven't seen this customer before, add them to dictionary
+                    users[customer] = []
+
+                # if cnt1 % 10000000 == 0:
+                #     print(f'cnt1: {cnt1}')
+                # cnt1 += 1
+                users[customer].append((movies_dict[int(movie)], int(rating)))  # adding tuple of (movie, rating)
+                rating_counter += 1
+
+                if rating_counter == 1000000:
+                    break
 
         cnt = 0
         for user in users:
