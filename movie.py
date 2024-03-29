@@ -49,7 +49,7 @@ class Network:
         - _community: A collection of vertices within a given community
     """
     _movies: dict[str, _Movie]
-    _communities: dict[str, set[_Movie]]
+    _communities: dict[str, tuple[set[_Movie], int]]  # CHANGED TYPE TO tuple[set[vertices], numedged in community]
 
     def __init__(self) -> None:
         """Initialize an empty network graph (no vertices or edges)."""
@@ -65,7 +65,10 @@ class Network:
         """
         if title not in self._movies:
             self._movies[title] = _Movie(title)
-            self._communities[title] = {_Movie(title)}
+            self._communities[title] = ({_Movie(title)}, 0)
+
+            # Reasoning: Since each vertex begins in its own community, the subgraph has only that vertex and
+            # 0 edges initially
 
     def add_edge(self, title1: str, title2: str, weight: int | float = 0) -> None:
         """Add an edge between the two movies with the given titles in this graph,
@@ -179,13 +182,24 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
     """
     Load a weighted review_graph
     """
-    graph = Network()
+    graph = Network()   # creates a new empty graph
+
+    # NOTE: our objective is to make a graph of the first 1000 movies for easier computation later on
+
     with open(reviews_file_path, 'r') as reviews_file, open(movies_file_path, 'r') as movies_file:
-        next(movies_file)
-        movies_dict: dict[int, str] = {}
+        next(movies_file)               # skips first row because it is a header
+        movies_dict: dict[int, str] = {}    # mapping of movieid (1-17700) to the movie_name (string)
+        movie_counter = 0
         for line in csv.reader(movies_file):
             movies_dict[int(line[0])] = line[2]
             graph.add_movie(movies_dict[int(line[0])])
+            movie_counter += 1
+            if movie_counter == 1000:
+                break
+
+        print (graph)
+
+        # NOTE: at this point, our graph has 1000 vertices, we now move on to the phase where we generate edged
 
         print("first")
 
