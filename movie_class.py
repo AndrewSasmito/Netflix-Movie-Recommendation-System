@@ -7,7 +7,7 @@ from __future__ import annotations
 import csv
 
 
-class _Movie:
+class Movie:
     """A vertex in a weighted movie network graph, used to represent a movie.
 
     Each vertex item is a movie title and is represented by a string.
@@ -23,7 +23,7 @@ class _Movie:
         - all(self in u.neighbours for u in self.neighbours)
     """
     title: str
-    neighbours: dict[_Movie, int | float]
+    neighbours: dict[Movie, int | float]
     community: str
 
     def __init__(self, title: str):
@@ -45,12 +45,12 @@ class Network:
     """An implementation of a movie network graph.
 
     Private Instance Attributes:
-        - _movies: A collection of the vertices contained in this graph,
+        - s: A collection of the vertices contained in this graph,
             maps a movie title to a _Movie object.
         - _community: A collection of vertices within a given community
     """
-    _movies: dict[str, _Movie]
-    _communities: dict[str, tuple[set[_Movie], int]]  # CHANGED TYPE TO tuple[set[vertices], numedges in community]
+    _movies: dict[str, Movie]
+    _communities: dict[str, tuple[set[Movie], float]]  # CHANGED TYPE TO tuple[set[vertices], numedges in community]
 
     # TODO: DO WE NEED TO KNOW WHAT THE EDGES IN THE SUBGRAPH ARE (EXTRA MEMORY), OR IS KNOWING THE NUMBER AND
     # TODO: INCREMENTING SUFFICIENT?
@@ -68,8 +68,8 @@ class Network:
         Do nothing if the given item is already in this graph.
         """
         if title not in self._movies:
-            self._movies[title] = _Movie(title)
-            self._communities[title] = ({_Movie(title)}, 0)
+            self._movies[title] = Movie(title)
+            self._communities[title] = ({Movie(title)}, 0)
 
             # Reasoning: Since each vertex begins in its own community, the subgraph has only that vertex and
             # 0 edges initially
@@ -158,13 +158,13 @@ class Network:
         else:
             raise ValueError
 
-    def get_movies(self) -> dict[str, _Movie]:
+    def get_movies(self) -> dict[str, Movie]:
         """Return the movies (vertices) that belong to the graph. We need a method since _movies
         is a protected class"""
         return self._movies
         # TODO: SHOULD WE RETURN SELF.MOVIES.COPY()?? EXTRA SPACE COMPLEXITY BUT MAYBE UEFUL IDK
 
-    def get_communities(self) -> dict[str, tuple[set[_Movie], int]]:
+    def get_communities(self) -> dict[str, tuple[set[Movie], int]]:
         """Return the communities found in the graph"""
         return self._communities
 
