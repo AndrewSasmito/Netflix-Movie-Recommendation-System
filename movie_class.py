@@ -147,26 +147,22 @@ class Network:
         m2 = self._movies[title2]
         return m1.neighbours.get(m2, 0)
 
-    def average_weight(self, title: str) -> float:
-        """Return the average weight of the edges adjacent to the movie corresponding to title.
-        TODO: IS THIS FUNCTION USEFUL??
-        Raise ValueError if title does not correspond to a movie in the graph.
-        """
-        if title in self._movies:
-            v = self._movies[title]
-            return sum(v.neighbours.values()) / len(v.neighbours)
-        else:
-            raise ValueError
-
     def get_movies(self) -> dict[str, Movie]:
         """Return the movies (vertices) that belong to the graph. We need a method since _movies
         is a protected class"""
         return self._movies
         # TODO: SHOULD WE RETURN SELF.MOVIES.COPY()?? EXTRA SPACE COMPLEXITY BUT MAYBE UEFUL IDK
 
-    def get_communities(self) -> dict[str, tuple[set[Movie], int]]:
+    def get_communities(self) -> dict[str, tuple[set[Movie], float]]:
         """Return the communities found in the graph"""
         return self._communities
+
+    def remove_empty_communities(self) -> None:
+        """Get rid of communities without any members"""
+        for community in self._communities:
+            if len(self._communities[community][0]) == 0:
+                del self._communities[community]
+        return None
 
     def adjacent(self, title1: str, title2: str) -> bool:
         """Return whether item1 and item2 are adjacent movies in this graph.

@@ -4,6 +4,15 @@ This is the main file of the Netflix Movie Recommendation System created by Saah
 Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
 """
 
+"""
+Steps:
+
+1. load graph
+2. cluster graph
+3. visualize graph
+
+"""
+
 
 # def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> WeightedGraph:
 #     graph = WeightedGraph()

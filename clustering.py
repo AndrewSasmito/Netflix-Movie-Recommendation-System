@@ -61,5 +61,5 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
 
             if max_density_increase > 0:
                 vertex.community = best_community
-
+        graph.remove_empty_communities()
         iterations += 1
