@@ -33,7 +33,7 @@ movie_entry.pack()
 movies = Listbox(root, width=50)
 movies.pack()
 
-selected_movies = []  # the movies we are working with
+selected_movies = set()  # the movies we are working with
 
 
 def modify(lst) -> Any:
@@ -48,7 +48,7 @@ def updater(event) -> Any:
     movie_name = movies.get(ACTIVE)
     movie_entry.delete(0, END)
     movie_entry.insert(END, movie_name)
-    selected_movies.append(movie_name)
+    selected_movies.update(movie_name)
 
 
 def verify(event) -> Any:
