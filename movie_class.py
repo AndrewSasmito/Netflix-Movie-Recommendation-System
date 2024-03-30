@@ -169,6 +169,7 @@ class Network:
         for community in self._communities:
             if len(self._communities[community][0]) == 0:
                 del self._communities[community]
+        return None
 
     def adjacent(self, title1: str, title2: str) -> bool:
         """Return whether item1 and item2 are adjacent movies in this graph.
