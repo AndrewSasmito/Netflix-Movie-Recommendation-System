@@ -32,7 +32,7 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
             movies_dict[int(line[0])] = line[2]
             graph.add_movie(movies_dict[int(line[0])])
             movie_counter += 1
-            if movie_counter == 50:
+            if movie_counter == 10:
                 break
 
         # print(graph.get_movies())
