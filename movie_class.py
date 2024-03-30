@@ -157,6 +157,13 @@ class Network:
         """Return the communities found in the graph"""
         return self._communities
 
+    def change_communities(self, vertex: Movie, new_community: str, add_density: float, rem_density: float) -> None:
+        """Move a movie to its neighbours community when it improves density"""
+        self._communities[vertex.community][0].remove(vertex)
+        self._communities[vertex.community][1] -= rem_density
+        self._communities[new_community][0].add(vertex)
+        self._communities[new_community][1] += add_density
+
     def remove_empty_communities(self) -> None:
         """Get rid of communities without any members"""
         for community in self._communities:

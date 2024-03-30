@@ -10,7 +10,10 @@ def community_density(edge: float, vertices: int) -> float:
     # vertices = len(movie_community[0])  # total number of vertices in community, used to calculate max edges
     # edges = (movie_community[1])  # number of edges in community
     #
-    return (2 * edge) / (vertices * (vertices - 1))
+    if vertices == 1 or vertices == 0:
+        return 0
+    else:
+        return (2 * edge) / (vertices * (vertices - 1))
 
 
 def added_weight(new_vertex: movie_class.Movie, community: tuple[set[movie_class.Movie], float]) -> float:
@@ -41,25 +44,45 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
     """Cluster the graph into communities, greedily maximizing the density of each community"""
     iterations = 0
     while iterations < epochs:
+        # print("test epochs")
+        vertex_count = 1
         for vertex_name in graph.get_movies():
             vertex = graph.get_movies()[vertex_name]
 
             max_density_increase = float('-inf')
+            density_add_best = 0
+            density_rem_best = 0
             best_community = vertex.community
 
             for neighbour in vertex.neighbours:
+
+                print(vertex_count, vertex.title, ' ', neighbour.title, ' ', vertex.neighbours[neighbour])
+
                 original_community = graph.get_communities()[vertex.community]
                 neighbour_community = graph.get_communities()[neighbour.community]
+
+                # print([u.title for u in original_community[0]])
+                # print(type(original_community[0]), type(neighbour_community[0]))
+                # print(u.title for u in original_community[0])
 
                 density_add = community_density(added_weight(vertex, neighbour_community), len(original_community) + 1)
                 density_rem = community_density(removed_weight(vertex, original_community), len(original_community) - 1)
 
+                # print(density_add, ' ', density_rem)
                 density_change = density_add - density_rem
+                if density_change > 0:
+                    print('hello world')
                 if density_change > max_density_increase:
                     max_density_increase = density_change
+                    density_add_best = density_add
+                    density_rem_best = density_rem
                     best_community = neighbour.community
-
+            vertex_count += 1
             if max_density_increase > 0:
                 vertex.community = best_community
+                # remove vertex from old community and place it into new community
+                # communities: dict[str, tuple[set[Movie], float]]
+                graph.change_communities(vertex, best_community, density_add_best, density_rem_best)
+
         graph.remove_empty_communities()
         iterations += 1

@@ -3,6 +3,8 @@
 import csv
 import movie_class
 
+# TODO: took 10 off
+
 
 def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
     """Determine the edge weight to increment the weight between movies by. The idea is that if a given user
@@ -30,7 +32,7 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
             movies_dict[int(line[0])] = line[2]
             graph.add_movie(movies_dict[int(line[0])])
             movie_counter += 1
-            if movie_counter == 1000:
+            if movie_counter == 10:
                 break
 
         # print(graph.get_movies())
@@ -67,7 +69,7 @@ def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) ->
                 # if rating_counter % 10000 == 0:
                 #     print(f'cnt: {rating_counter}')
 
-                if rating_counter == 1000000:
+                if rating_counter == 10000:
                     break
         # print('second')
 
