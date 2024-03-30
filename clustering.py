@@ -48,7 +48,6 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
             best_community = vertex.community
 
             for neighbour in vertex.neighbours:
-                # _communities: dict[str, tuple[set[_Movie], int]]
                 original_community = graph.get_communities()[vertex.community]
                 neighbour_community = graph.get_communities()[neighbour.community]
 
