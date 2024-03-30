@@ -10,7 +10,7 @@ def community_density(edge: float, vertices: int) -> float:
     # vertices = len(movie_community[0])  # total number of vertices in community, used to calculate max edges
     # edges = (movie_community[1])  # number of edges in community
     #
-    if vertices <= 1:
+    if vertices == 1 or vertices == 0:
         return 0
     else:
         return (2 * edge) / (vertices * (vertices - 1))
