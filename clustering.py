@@ -2,6 +2,11 @@
 
 import movie_class
 import load_graph
+import networkx as nx
+import matplotlib.pyplot as plt
+
+def subgraph_density(community: str):
+    """asdfjk;"""
 
 
 def community_density(edge: float, vertices: int) -> float:
@@ -17,7 +22,7 @@ def community_density(edge: float, vertices: int) -> float:
         return (2 * edge) / (vertices * (vertices - 1))
 
 
-def added_weight(new_vertex: movie_class.Movie, community: tuple[set[movie_class.Movie], float]) -> float:
+def added_weight(new_vertex: movie_class.Movie, community: list[set[movie_class.Movie] | float]) -> float:
     """Return the weighted sum of the edges that the vertex is connected to in the community proposed for a merge
     O(N) algorithm wher N is the number of vertices"""
     community_vertices = community[0]
@@ -33,11 +38,10 @@ def added_weight(new_vertex: movie_class.Movie, community: tuple[set[movie_class
             # print(vertex)
             # print('TEST')
             added_weight += new_vertex.neighbours[vertex]
-
     return community[1] + added_weight
 
 
-def removed_weight(removed_vertex: movie_class.Movie, community: tuple[set[movie_class.Movie], float]) -> float:
+def removed_weight(removed_vertex: movie_class.Movie, community: list[set[movie_class.Movie] | float]) -> float:
     """Return the weighted sum of edges removed when a vertex leaves it original community"""
     community_vertices = community[0]
     removed_weight = 0
@@ -53,9 +57,10 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
     iterations = 0
     while iterations < epochs:
         # print("test epochs")
-        vertex_count = 1
+        # vertex_count = 1
         for vertex_name in graph.get_movies():
             vertex = graph.get_movies()[vertex_name]
+            print(vertex_name)
 
             max_density_increase = float('-inf')
             density_add_best = 0
@@ -85,16 +90,50 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
                     density_add_best = density_add
                     density_rem_best = density_rem
                     best_community = neighbour.community
-            vertex_count += 1
+            # vertex_count += 1
             if max_density_increase > 0:
-                vertex.community = best_community
                 # remove vertex from old community and place it into new community
                 # communities: dict[str, tuple[set[Movie], float]]
                 graph.change_communities(vertex, best_community, density_add_best, density_rem_best)
+                vertex.community = best_community
 
-        graph.remove_empty_communities()
+        # graph.remove_empty_communities()
         iterations += 1
 
 
-g = load_graph.load_movie_graph('data/Netflix_User_Ratings.csv', 'data/movies.csv')
+# g = load_graph.load_movie_graph('data/Netflix_User_Ratings.csv', 'data/movies.csv')
+# community_detection(g, 10)
+
+
+# TEST GRAPH
+g = movie_class.Network()
+G = nx.Graph()
+for i in range(7):
+    g.add_movie(str(i))
+    G.add_node(str(i))
+
+g.add_edge('0', '1', 1)
+g.add_edge('0', '2', 1)
+g.add_edge('2', '1', 1)
+# g.add_edge('2', '3', 1)
+
+G.add_edge('0', '1')
+G.add_edge('0', '2')
+G.add_edge('2', '1')
+# G.add_edge('2', '3')
+pos = nx.spring_layout(G)
+for i in range(3, 7):
+    for j in range(i + 1, 7):
+        g.add_edge(str(i), str(j), 1)
+        G.add_edge(str(i), str(j))
+# pos = nx.spring_layout(G)
+nx.draw(G, pos, with_labels = True)
+plt.show()
+
 community_detection(g, 1)
+
+print(g._communities)
+
+for u in g._communities:
+    if len(g._communities[u][0]) > 0:
+        print(len(g._communities[u][0]), g._communities[u][0])
