@@ -50,7 +50,7 @@ class Network:
         - _community: A collection of vertices within a given community
     """
     _movies: dict[str, Movie]
-    _communities: dict[str, tuple[set[Movie], float]]  # CHANGED TYPE TO tuple[set[vertices], numedges in community]
+    _communities: dict[str, list[set[Movie] | float]]  # CHANGED TYPE TO tuple[set[vertices], numedges in community]
 
     # TODO: DO WE NEED TO KNOW WHAT THE EDGES IN THE SUBGRAPH ARE (EXTRA MEMORY), OR IS KNOWING THE NUMBER AND
     # TODO: INCREMENTING SUFFICIENT?
@@ -69,7 +69,7 @@ class Network:
         """
         if title not in self._movies:
             self._movies[title] = Movie(title)
-            self._communities[title] = ({self._movies[title]}, 0)
+            self._communities[title] = [{self._movies[title]}, 0.0]
 
             # Reasoning: Since each vertex begins in its own community, the subgraph has only that vertex and
             # 0 edges initially
@@ -86,7 +86,7 @@ class Network:
             - item1 != item2
         """
         if title1 in self._movies and title2 in self._movies:
-            if self._movies[title2] in self.get_neighbours(title1): # if the edge exists, do nothing, nice Andrew
+            if self._movies[title2] in self.get_neighbours(title1):  # if the edge exists, do nothing, nice Andrew
                 return
 
             m1 = self._movies[title1]
@@ -153,12 +153,20 @@ class Network:
         return self._movies
         # TODO: SHOULD WE RETURN SELF.MOVIES.COPY()?? EXTRA SPACE COMPLEXITY BUT MAYBE UEFUL IDK
 
-    def get_communities(self) -> dict[str, tuple[set[Movie], float]]:
+    def get_communities(self) -> dict[str, list[set[Movie] | float]]:
         """Return the communities found in the graph"""
         return self._communities
 
     def change_communities(self, vertex: Movie, new_community: str, add_density: float, rem_density: float) -> None:
         """Move a movie to its neighbours community when it improves density"""
+        # print(vertex.title)
+        # print(vertex.title in self._movies)
+        # print(self.get_movies().keys())
+        # print(vertex.community in self._communities)
+        # print(self._communities.keys())
+        # print(vertex, vertex.title, self._communities[vertex.community][0])
+        # print(vertex.community in self._communities)
+
         self._communities[vertex.community][0].remove(vertex)
         self._communities[vertex.community][1] -= rem_density
         self._communities[new_community][0].add(vertex)
@@ -166,6 +174,11 @@ class Network:
 
     def remove_empty_communities(self) -> None:
         """Get rid of communities without any members"""
+        it = 0
+
+        while it < len(self._communities):
+            if len(self._communities[community][it]) == 0:
+                del self._communities[community]
         for community in self._communities:
             if len(self._communities[community][0]) == 0:
                 del self._communities[community]

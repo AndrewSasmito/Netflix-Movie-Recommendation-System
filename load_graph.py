@@ -11,7 +11,10 @@ def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
     gives a pair of movies the exact same rating, the 'correlation' between the movies is exact and we increment
     edge weight by 1. If a user rates a movie 5 stars and another movie 0 stars, increment the weight by 0
     The below formula captures this premise"""
-
+    # if rating1 == 5 and rating2 == 5:
+    #     return 1
+    # else:
+    #     return 0
     return 1 - abs(rating1 - rating2) / 5
 
 
@@ -69,10 +72,10 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
                 # if rating_counter % 10000 == 0:
                 #     print(f'cnt: {rating_counter}')
 
-                if rating_counter == 10000:
+                if rating_counter == 1000:
                     break
         # print('second')
-
+        print(len(user_ratings))
         cnt = 0
         # if ~500,000 users, 2 ratings per user, 2 x 10^ 6. If 1 user, 1,000,000 per user (impossible if we assume
         # each user rates a movie either 0 or 1 times. # 1000 users, 1000 ratings per user, 1x10^9
