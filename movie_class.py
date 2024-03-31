@@ -69,7 +69,7 @@ class Network:
         """
         if title not in self._movies:
             self._movies[title] = Movie(title)
-            self._communities[title] = ({Movie(title)}, 0)
+            self._communities[title] = ({self._movies[title]}, 0)
 
             # Reasoning: Since each vertex begins in its own community, the subgraph has only that vertex and
             # 0 edges initially
