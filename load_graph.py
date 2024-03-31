@@ -15,7 +15,7 @@ def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
     return 1 - abs(rating1 - rating2) / 5
 
 
-def load_weighted_review_graph(reviews_file_path: str, movies_file_path: str) -> movie_class.Network:
+def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_class.Network:
     """
     Load a weighted review_graph
     """
