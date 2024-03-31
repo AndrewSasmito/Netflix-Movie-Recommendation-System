@@ -1,6 +1,7 @@
 """TODO: EMPTY DOCSTRING"""
 
 import movie_class
+import load_graph
 
 
 def community_density(edge: float, vertices: int) -> float:
@@ -23,7 +24,14 @@ def added_weight(new_vertex: movie_class.Movie, community: tuple[set[movie_class
     community_vertices = community[0]
     added_weight = 0
     for vertex in community_vertices:
-        if vertex in new_vertex.neighbours:
+        # print(vertex.title, [u.title for u in new_vertex.neighbours])
+        # print(vertex, new_vertex.neighbours)
+        # print('test 1', vertex in new_vertex.neighbours)
+        # print('test 2', vertex.title in [u.title for u in new_vertex.neighbours])
+        # print(vertex.title, [u.title for u in new_vertex.neighbours])
+        if vertex.title in [u.title for u in new_vertex.neighbours]:
+            # print(vertex)
+            # print('TEST')
             added_weight += new_vertex.neighbours[vertex]
 
     return community[1] + added_weight
@@ -34,7 +42,7 @@ def removed_weight(removed_vertex: movie_class.Movie, community: tuple[set[movie
     community_vertices = community[0]
     removed_weight = 0
     for vertex in community_vertices:
-        if vertex in removed_vertex.neighbours:
+        if vertex.title in [u.title for u in removed_vertex.neighbours]:
             removed_weight += removed_vertex.neighbours[vertex]
 
     return community[1] - removed_weight
@@ -56,7 +64,7 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
 
             for neighbour in vertex.neighbours:
 
-                print(vertex_count, vertex.title, ' ', neighbour.title, ' ', vertex.neighbours[neighbour])
+                # print(vertex_count, vertex.title, ' ', neighbour.title, ' ', vertex.neighbours[neighbour])
 
                 original_community = graph.get_communities()[vertex.community]
                 neighbour_community = graph.get_communities()[neighbour.community]
@@ -86,3 +94,7 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
 
         graph.remove_empty_communities()
         iterations += 1
+
+
+g = load_graph.load_movie_graph('data/Netflix_User_Ratings.csv', 'data/movies.csv')
+community_detection(g, 1)
