@@ -2,7 +2,7 @@ import tkinter as tk
 import csv
 
 from typing import Any
-from tkinter import Label, Entry, Listbox, END, ACTIVE
+from tkinter import Label, Entry, Listbox, END, messagebox
 
 root = tk.Tk()
 
@@ -21,19 +21,31 @@ label2 = tk.Label(root, text="To begin, enter a movie you have watched or like, 
                   font=('Arial', 30))
 label2.pack(padx=20, pady=10)
 
-# Search bar code
+movie_input1 = Label(root, text="Selected Movies:", font=('Arial', 14))
+movie_input1.pack()
 
-movie_input = Label(root, text="Enter Movie(s)", font=('Arial', 14))
+selected_movies_listbox = tk.Listbox(root, width=50, height=5)
+selected_movies_listbox.pack(pady=5)
 
-movie_input.pack()
+movie_input2 = Label(root, text="Enter Movie(s) By Clicking or Typing", font=('Arial', 14))
+movie_input2.pack()
 
 movie_entry = Entry(root, font=('Arial', 20))
 movie_entry.pack()
 
-movies = Listbox(root, width=50)
+movies = Listbox(root, width=50, height=5)
 movies.pack()
 
-selected_movies = set()  # the movies we are working with
+movie_input3 = Label(root, text="Maximum number of reviews:", font=('Arial', 14))
+movie_input3.pack()
+
+spinbox = tk.Spinbox(root, from_=0, to=100)
+spinbox.pack(padx=20, pady=10)
+
+selected_movies = set()  # store the movies we are working with
+
+movie_input4 = Label(root, text="Then, hit recommend.", font=('Arial', 20))
+movie_input4.pack(pady=10)
 
 
 def modify(lst) -> Any:
@@ -43,12 +55,18 @@ def modify(lst) -> Any:
         movies.insert(END, movie)
 
 
-def updater(event) -> Any:
+def updater(event):
     """Replace entry content with selected movie and store it"""
-    movie_name = movies.get(ACTIVE)
-    movie_entry.delete(0, END)
-    movie_entry.insert(END, movie_name)
-    selected_movies.update(movie_name)
+    if len(selected_movies) >= 5:
+        # error message
+        tk.messagebox.showinfo("Limit Reached", "You can only select up to 5 movies. Press recommend and try again.")
+        return
+
+    movie_name = movies.get(tk.ACTIVE)
+    movie_entry.delete(0, tk.END)
+    movie_entry.insert(tk.END, movie_name)
+    selected_movies.add(movie_name)
+    update_selected_movies()
 
 
 def verify(event) -> Any:
@@ -64,10 +82,42 @@ def verify(event) -> Any:
     modify(lst)
 
 
+def recommend_movies():
+    """Function to handle the recommendation process"""
+    global selected_movies  # Indicates that we're modifying the global variable
+    movie_entry.delete(0, tk.END)
+    selected_movies = set()
+    spinbox.delete(0, tk.END)
+    spinbox.insert(0, '0')
+
+
+def update_selected_movies(event=None):
+    """Insert the movies the user selected to our text label"""
+    global selected_movies
+    selected_movies_listbox.delete(0, tk.END)
+    for movie in selected_movies:
+        selected_movies_listbox.insert(tk.END, movie)
+
+
+selected_movies_listbox.bind("<<ListboxSelect>>", update_selected_movies)
+
+
+def add_movie():
+    """abcdeg"""
+    global selected_movies
+    selected_movies.add("Selected Movie")
+    update_selected_movies()
+
+
+button = tk.Button(root, text="Recommend", font=('Arial', 30), command=recommend_movies)
+button.pack()
+
 modify(list_of_movies)
+
 movies.bind("<<ListboxSelect>>", updater)
 movie_entry.bind("<KeyRelease>", verify)
-button = tk.Button(root, text="Recommend", font=('Arial', 30))
-button.pack(padx=20, pady=30)
+
+movie_input4 = Label(root, text="Recommendations:", font=('Arial', 20))
+movie_input4.pack()
 
 root.mainloop()
