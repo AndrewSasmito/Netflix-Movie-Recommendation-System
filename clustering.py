@@ -20,8 +20,8 @@ def community_density(edge: float, vertices: int) -> float:
 def added_weight(new_vertex: movie_class.Movie, community: tuple[set[movie_class.Movie], float]) -> float:
     """Return the weighted sum of the edges that the vertex is connected to in the community proposed for a merge
     O(N) algorithm wher N is the number of vertices"""
-
     community_vertices = community[0]
+    # print(community_vertices)
     added_weight = 0
     for vertex in community_vertices:
         # print(vertex.title, [u.title for u in new_vertex.neighbours])
@@ -29,7 +29,7 @@ def added_weight(new_vertex: movie_class.Movie, community: tuple[set[movie_class
         # print('test 1', vertex in new_vertex.neighbours)
         # print('test 2', vertex.title in [u.title for u in new_vertex.neighbours])
         # print(vertex.title, [u.title for u in new_vertex.neighbours])
-        if vertex.title in [u.title for u in new_vertex.neighbours]:
+        if vertex in new_vertex.neighbours:
             # print(vertex)
             # print('TEST')
             added_weight += new_vertex.neighbours[vertex]
@@ -42,7 +42,7 @@ def removed_weight(removed_vertex: movie_class.Movie, community: tuple[set[movie
     community_vertices = community[0]
     removed_weight = 0
     for vertex in community_vertices:
-        if vertex.title in [u.title for u in removed_vertex.neighbours]:
+        if vertex in removed_vertex.neighbours:
             removed_weight += removed_vertex.neighbours[vertex]
 
     return community[1] - removed_weight
@@ -78,8 +78,8 @@ def community_detection(graph: movie_class.Network, epochs: int) -> None:
 
                 # print(density_add, ' ', density_rem)
                 density_change = density_add - density_rem
-                if density_change > 0:
-                    print('hello world')
+                # if density_change > 0:
+                #     print('hello world')
                 if density_change > max_density_increase:
                     max_density_increase = density_change
                     density_add_best = density_add
