@@ -21,26 +21,32 @@ label2 = tk.Label(root, text="To begin, enter a movie you have watched or like, 
                   font=('Arial', 30))
 label2.pack(padx=20, pady=10)
 
-movie_input1 = Label(root, text="Selected Movies:", font=('Arial', 14))
+movie_input1 = Label(root, text="Selected:", font=('Arial', 14))
 movie_input1.pack()
 
 selected_movies_listbox = tk.Listbox(root, width=50, height=5)
 selected_movies_listbox.pack(pady=5)
 
-movie_input2 = Label(root, text="Enter Movie(s) By Clicking or Typing", font=('Arial', 14))
-movie_input2.pack()
+movie_input2 = Label(root, text="Enter Movie(s) By Double Clicking. Feel free to type", font=('Arial', 14), width=50)
+movie_input2.pack(pady=5)
 
 movie_entry = Entry(root, font=('Arial', 20))
 movie_entry.pack()
 
 movies = Listbox(root, width=50, height=5)
-movies.pack()
+movies.pack(pady=5)
+
 
 movie_input3 = Label(root, text="Maximum number of reviews:", font=('Arial', 14))
 movie_input3.pack()
 
-spinbox = tk.Spinbox(root, from_=0, to=100)
+num_of_reviews = tk.IntVar()  # gets passed to backend later
+
+num_of_reviews.set(0)
+
+spinbox = tk.Spinbox(root, from_=0, to=100, textvariable=num_of_reviews)
 spinbox.pack(padx=20, pady=10)
+
 
 selected_movies = set()  # store the movies we are working with
 
@@ -70,7 +76,7 @@ def updater(event):
 
 
 def verify(event) -> Any:
-    """idk"""
+    """idk, someone fill this in pls"""
     if movie_entry.get() == '':
         lst = list_of_movies
     else:
@@ -84,7 +90,7 @@ def verify(event) -> Any:
 
 def recommend_movies():
     """Function to handle the recommendation process"""
-    global selected_movies  # Indicates that we're modifying the global variable
+    global selected_movies
     movie_entry.delete(0, tk.END)
     selected_movies = set()
     spinbox.delete(0, tk.END)
@@ -114,8 +120,8 @@ button.pack()
 
 modify(list_of_movies)
 
-movies.bind("<<ListboxSelect>>", updater)
-movie_entry.bind("<KeyRelease>", verify)
+movies.bind("<ButtonRelease-1>", updater)
+movie_entry.bind("<<Button-1>>", verify)
 
 movie_input4 = Label(root, text="Recommendations:", font=('Arial', 20))
 movie_input4.pack()
