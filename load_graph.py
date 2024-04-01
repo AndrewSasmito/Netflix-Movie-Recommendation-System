@@ -75,7 +75,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
                 if rating_counter == 1000:
                     break
         # print('second')
-        print(len(user_ratings))
+        # print(len(user_ratings))
         cnt = 0
         # if ~500,000 users, 2 ratings per user, 2 x 10^ 6. If 1 user, 1,000,000 per user (impossible if we assume
         # each user rates a movie either 0 or 1 times. # 1000 users, 1000 ratings per user, 1x10^9
@@ -92,11 +92,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
                         graph.increment_edge(movie1, movie2, weight)
                     elif weight > 0:
                         graph.add_edge(movie1, movie2, weight)
-                    # graph.increment_edge(movie1, movie2, weight)
-                    # if graph.get_weight(movie1, movie2) == 0:   # ensures there are no edges with 0 weight
-                    #     graph.remove_edge(movie1, movie2)
-            # if cnt % 10000 == 0:
-            #     print(f'cnt: {cnt}')
-            # cnt += 1
+
+    graph.add_sum_of_weights()
 
     return graph

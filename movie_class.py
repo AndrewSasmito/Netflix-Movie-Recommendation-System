@@ -24,6 +24,7 @@ class Movie:
     """
     title: str
     neighbours: dict[Movie, int | float]
+    sum_weights: 0
     community: str
 
     def __init__(self, title: str):
@@ -92,6 +93,11 @@ class Network:
             m2.neighbours[m1] = weight
         else:
             raise ValueError
+
+    def add_sum_of_weights(self) -> None:
+        """TODO: Docstring for add_sum_weights"""
+        for movie in self._movies:
+            self._movies[movie].sum_weights = sum(self._movies[movie].neighbours.values())
 
     def remove_edge(self, title1: str, title2: str) -> None:
         """Remove an edge between the two movies with the given titles in this graph.
