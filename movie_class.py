@@ -203,14 +203,14 @@ class Network:
 
     def remove_empty_communities(self) -> None:
         """Get rid of communities without any members"""
-        it = 0
+        communities_to_remove = set()
 
-        while it < len(self._communities):
-            if len(self._communities[community][it]) == 0:
-                del self._communities[community]
         for community in self._communities:
             if len(self._communities[community][0]) == 0:
-                del self._communities[community]
+                communities_to_remove.add(community)
+
+        for community in communities_to_remove:
+            self._communities.pop(community)
 
     def get_best_movies(self, movies: list[Movie], limit: int) -> list[Movie]:
         """Return a maximum length limit of the best _Movie objects connected to objects in movies
