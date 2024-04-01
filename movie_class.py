@@ -4,6 +4,7 @@ This is the graph implementation file of the Netflix Movie Recommendation System
 Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
 """
 from __future__ import annotations
+from queue import PriorityQueue
 import csv
 
 
@@ -210,3 +211,48 @@ class Network:
     def get_all_vertices(self) -> set:
         """Return a set of all movies in this graph."""
         return set(self._movies.keys())
+
+    def get_best_movies(self, lst: list[Movie], k: int) -> list[Movie]:
+        """Return a maximum length k of the best _Movie objects connected to objects in lst and in the same community
+        Raise a ValueError if the Movie object is not in this graph
+        """
+        # Priorityqueue sorts from least to greatest
+        pq = PriorityQueue()
+        list_of_movies = []
+        visited = set()
+
+        for movie in lst:
+            # Should not return itself
+            visited.add(movie)
+
+            if movie not in self._movies:
+                # Movie is not in the network
+                raise ValueError
+
+            for neighbour in movie.neighbours:
+                if neighbour.community == movie.community and neighbour not in visited:
+                    # Checking if they are in the same community
+                    pq.put([- movie.neighbours[neighbour], neighbour])
+                    # Adding negative weight as priority queue sorts from least to greatest
+
+        for _ in range(k):
+            if pq.empty():
+                return list_of_movies
+
+            movie = pq.get()
+            # movie[0] = the edge weight (Inversed)
+            # movie[1] = the movie object
+            if movie[1] in visited:
+                # movie[1] has already been iterated over
+                continue
+
+            list_of_movies.append(movie[1])
+            visited.add(movie[1])
+
+            for neighbour in movie[1].neighbours:
+                if neighbour.community == movie[1].community and neighbour not in visited:
+                    # Checking if they are in the same community
+                    pq.put([- movie[1].neighbours[neighbour], neighbour])
+                    # Adding negative weight as priority queue sorts from least to greatest
+
+        return list_of_movies
