@@ -5,7 +5,6 @@ Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the seco
 """
 from __future__ import annotations
 from queue import PriorityQueue
-import csv
 
 
 class Movie:
@@ -46,12 +45,12 @@ class Network:
     """An implementation of a movie network graph.
 
     Private Instance Attributes:
-        - s: A collection of the vertices contained in this graph,
+        - _movies: A collection of the vertices contained in this graph,
             maps a movie title to a _Movie object.
         - _community: A collection of vertices within a given community
     """
     _movies: dict[str, Movie]
-    _communities: dict[str, list[set[Movie] | float]]  # CHANGED TYPE TO tuple[set[vertices], numedges in community]
+    _communities: dict[str, list[set[Movie] | float]]
 
     # TODO: DO WE NEED TO KNOW WHAT THE EDGES IN THE SUBGRAPH ARE (EXTRA MEMORY), OR IS KNOWING THE NUMBER AND
     # TODO: INCREMENTING SUFFICIENT?
@@ -66,61 +65,56 @@ class Network:
         assign it to its own community.
 
         The new vertex is not adjacent to any other vertices.
-        Do nothing if the given item is already in this graph.
+        Do nothing if the given title is already in this graph.
         """
         if title not in self._movies:
             self._movies[title] = Movie(title)
             self._communities[title] = [{self._movies[title]}, 0.0]
 
-            # Reasoning: Since each vertex begins in its own community, the subgraph has only that vertex and
-            # 0 edges initially
-
     def add_edge(self, title1: str, title2: str, weight: int | float = 0) -> None:
-        """Add an edge between the two movies with the given titles in this graph,
-        with the given weight.
+        """Add an edge with the given weight between the two movies with the given titles.
 
         Do nothing if there is already an edge between the two movies.
 
-        Raise a ValueError if item1 or item2 do not appear as movies in this graph.
+        Raise a ValueError if title1 or title2 do not appear as movies in this graph.
 
         Preconditions:
             - item1 != item2
         """
         if title1 in self._movies and title2 in self._movies:
-            if self._movies[title2] in self.get_neighbours(title1):  # if the edge exists, do nothing, nice Andrew
+            if self._movies[title2] in self.get_neighbours(title1):
                 return
 
             m1 = self._movies[title1]
             m2 = self._movies[title2]
 
-            # Add the new edge
             m1.neighbours[m2] = weight
             m2.neighbours[m1] = weight
         else:
-            # We didn't find an existing movie for both items.
             raise ValueError
 
     def remove_edge(self, title1: str, title2: str) -> None:
         """Remove an edge between the two movies with the given titles in this graph.
 
-        Raise a ValueError if item1 or item2 do not appear as movies in this graph.
-        Assumes if they are neigbhours, then m2 in m1.neighbours and m1 in m2.neighbours
+        Raise a ValueError if title1 or title2 do not appear as movies in this graph.
+
         Preconditions:
             - item1 != item2
-            - m1 and m2 are in self._movies
-            - an edge exists between the two movies
+            - self._movies[title1] in set(self._movies[title2].neighbours.keys())
         """
-        m1 = self._movies[title1]
-        m2 = self._movies[title2]
-        # Add the new edge
-        m1.neighbours.pop(m2)
-        m2.neighbours.pop(m1)
+        if title1 in self._movies and title2 in self._movies:
+            m1 = self._movies[title1]
+            m2 = self._movies[title2]
+
+            m1.neighbours.pop(m2)
+            m2.neighbours.pop(m1)
+        else:
+            raise ValueError
 
     def increment_edge(self, title1: str, title2: str, weight: float) -> None:
-        """Increment the edge weight between the two movies with the given titles in this graph,
-        with the given weight.
+        """Increment the edge weight between the two movies with the given titles in this graph.
 
-        Raise a ValueError if item1 or item2 do not appear as movies in this graph.
+        Raise a ValueError if title1 or title2 do not appear as movies in this graph.
 
         Preconditions:
             - item1 != item2
@@ -129,24 +123,52 @@ class Network:
             m1 = self._movies[title1]
             m2 = self._movies[title2]
 
-            # Increment the new edge
             m1.neighbours[m2] += weight
             m2.neighbours[m1] += weight
         else:
-            # We didn't find an existing movie for both items.
             raise ValueError
 
     def get_weight(self, title1: str, title2: str) -> int | float:
         """Return the weight of the edge between the given movies.
 
-        Return 0 if item1 and item2 are not adjacent.
+        Return 0 if title1 and title2 are not adjacent.
 
-        Preconditions:
-            - item1 and item2 are vertices in this graph
+        Raise a ValueError if title1 or title2 do not appear as movies in this graph.
         """
-        m1 = self._movies[title1]
-        m2 = self._movies[title2]
-        return m1.neighbours.get(m2, 0)
+        if title1 in self._movies and title2 in self._movies:
+            m1 = self._movies[title1]
+            m2 = self._movies[title2]
+            return m1.neighbours.get(m2, 0)
+        else:
+            raise ValueError
+
+    def adjacent(self, title1: str, title2: str) -> bool:
+        """Return whether title1 and title2 are adjacent movies in this graph.
+
+        Return False if title1 or title2 do not appear as movies in this graph.
+        """
+        if title1 in self._movies and title2 in self._movies:
+            m1 = self._movies[title1]
+            return any(m2.title == title2 for m2 in m1.neighbours)
+        else:
+            return False
+
+    def get_neighbours(self, title: str) -> set:
+        """Return a set of the neighbours of the given movie.
+
+        Note that the *titles* are returned, not the _Movie objects themselves.
+
+        Raise a ValueError if title does not appear as a movie in this graph.
+        """
+        if title in self._movies:
+            m = self._movies[title]
+            return {neighbour.title for neighbour in m.neighbours}
+        else:
+            raise ValueError
+
+    def get_all_vertices(self) -> set:
+        """Return a set of all movies in this graph."""
+        return set(self._movies.keys())
 
     def get_movies(self) -> dict[str, Movie]:
         """Return the movies (vertices) that belong to the graph. We need a method since _movies
@@ -184,44 +206,18 @@ class Network:
             if len(self._communities[community][0]) == 0:
                 del self._communities[community]
 
-    def adjacent(self, title1: str, title2: str) -> bool:
-        """Return whether item1 and item2 are adjacent movies in this graph.
+    def get_best_movies(self, movies: list[Movie], limit: int) -> list[Movie]:
+        """Return a maximum length limit of the best _Movie objects connected to objects in movies
+        and in the same community.
 
-        Return False if item1 or item2 do not appear as movies in this graph.
-        """
-        if title1 in self._movies and title2 in self._movies:
-            m1 = self._movies[title1]
-            return any(m2.title == title2 for m2 in m1.neighbours)
-        else:
-            return False
-
-    def get_neighbours(self, title: str) -> set:
-        """Return a set of the neighbours of the given movie.
-
-        Note that the *titles* are returned, not the _Movie objects themselves.
-
-        Raise a ValueError if title does not appear as a movie in this graph.
-        """
-        if title in self._movies:
-            m = self._movies[title]
-            return {neighbour.title for neighbour in m.neighbours}
-        else:
-            raise ValueError
-
-    def get_all_vertices(self) -> set:
-        """Return a set of all movies in this graph."""
-        return set(self._movies.keys())
-
-    def get_best_movies(self, lst: list[Movie], k: int) -> list[Movie]:
-        """Return a maximum length k of the best _Movie objects connected to objects in lst and in the same community
         Raise a ValueError if the Movie object is not in this graph
         """
-        # Priorityqueue sorts from least to greatest
+        # PriorityQueue sorts from least to greatest
         pq = PriorityQueue()
         list_of_movies = []
         visited = set()
 
-        for movie in lst:
+        for movie in movies:
             # Should not return itself
             visited.add(movie)
 
@@ -232,10 +228,10 @@ class Network:
             for neighbour in movie.neighbours:
                 if neighbour.community == movie.community and neighbour not in visited:
                     # Checking if they are in the same community
-                    pq.put([- movie.neighbours[neighbour], neighbour])
+                    pq.put([-movie.neighbours[neighbour], neighbour])
                     # Adding negative weight as priority queue sorts from least to greatest
 
-        for _ in range(k):
+        for _ in range(limit):
             if pq.empty():
                 return list_of_movies
 
@@ -252,7 +248,7 @@ class Network:
             for neighbour in movie[1].neighbours:
                 if neighbour.community == movie[1].community and neighbour not in visited:
                     # Checking if they are in the same community
-                    pq.put([- movie[1].neighbours[neighbour], neighbour])
+                    pq.put([-movie[1].neighbours[neighbour], neighbour])
                     # Adding negative weight as priority queue sorts from least to greatest
 
         return list_of_movies
