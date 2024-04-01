@@ -11,10 +11,6 @@ def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
     gives a pair of movies the exact same rating, the 'correlation' between the movies is exact and we increment
     edge weight by 1. If a user rates a movie 5 stars and another movie 0 stars, increment the weight by 0
     The below formula captures this premise"""
-    # if rating1 == 5 and rating2 == 5:
-    #     return 1
-    # else:
-    #     return 0
     return 1 - abs(rating1 - rating2) / 5
 
 
@@ -38,13 +34,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
             if movie_counter == 10:
                 break
 
-        # print(graph.get_movies())
-
         # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
-
-        # print("first")
-
-        # print(movies_dict)
 
         next(reviews_file)  # skips first row because its a header
 
@@ -56,16 +46,12 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
             customer, rating, _, movie = line   # replaced date with _ since we don't use it anyways
 
             if int(movie) not in movies_dict:  # if the user rates a movie we don't consider
-                # print('asdfjklkj')
                 pass
             else:
 
                 if customer not in user_ratings:   # if we haven't seen this customer before, add them to dictionary
                     user_ratings[customer] = []
 
-                # if cnt1 % 10000000 == 0:
-                #     print(f'cnt1: {cnt1}')
-                # cnt1 += 1
                 user_ratings[customer].append((movies_dict[int(movie)], int(rating)))  # adding tuple of (movie, rating)
                 rating_counter += 1
 
@@ -74,9 +60,6 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
 
                 if rating_counter == 1000:
                     break
-        # print('second')
-        # print(len(user_ratings))
-        cnt = 0
         # if ~500,000 users, 2 ratings per user, 2 x 10^ 6. If 1 user, 1,000,000 per user (impossible if we assume
         # each user rates a movie either 0 or 1 times. # 1000 users, 1000 ratings per user, 1x10^9
         for user in user_ratings:                       # upto 480,000 users 4.8 x 10^6

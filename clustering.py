@@ -3,7 +3,7 @@
 import movie_class
 import networkx as nx
 import matplotlib.pyplot as plt
-
+import load_graph
 
 def sigma_in(community: list[set[movie_class.Movie] | float]):
     """TODO: Docstring for """
@@ -84,29 +84,30 @@ def louvain(graph: movie_class.Network, epochs: int) -> None:
                 # print(graph.get_communities())
 
 
+g = load_graph.load_movie_graph('data/Netflix_User_Ratings.csv', 'data/movies.csv')
 # TEST GRAPH 1:
-g = movie_class.Network()
-G = nx.Graph()
-for i in range(6):
-    g.add_movie(str(i))
-    G.add_node(str(i))
-
-for i in range(0, 3):
-    for j in range(i + 1, 3):
-        g.add_edge(str(i), str(j), 1)
-        G.add_edge(str(i), str(j))
-for i in range(3, 6):
-    for j in range(i + 1, 6):
-        g.add_edge(str(i), str(j), 1)
-        G.add_edge(str(i), str(j))
-
-g.add_edge('4', '2', 1)
-G.add_edge('4', '2')
-
-g.add_sum_of_weights()
-pos = nx.spring_layout(G)
-nx.draw(G, pos, with_labels=True)
-plt.show()
+# g = movie_class.Network()
+# G = nx.Graph()
+# for i in range(6):
+#     g.add_movie(str(i))
+#     G.add_node(str(i))
+#
+# for i in range(0, 3):
+#     for j in range(i + 1, 3):
+#         g.add_edge(str(i), str(j), 1)
+#         G.add_edge(str(i), str(j))
+# for i in range(3, 6):
+#     for j in range(i + 1, 6):
+#         g.add_edge(str(i), str(j), 1)
+#         G.add_edge(str(i), str(j))
+#
+# g.add_edge('4', '2', 1)
+# G.add_edge('4', '2')
+#
+# g.add_sum_of_weights()
+# pos = nx.spring_layout(G)
+# nx.draw(G, pos, with_labels=True)
+# plt.show()
 
 # TEST GRAPH 2:
 # g = movie_class.Network()
