@@ -24,10 +24,10 @@ class Movie:
     """
     title: str
     neighbours: dict[Movie, int | float]
-    sum_weights: 0
+    sum_weights: int | float
     community: str
 
-    def __init__(self, title: str):
+    def __init__(self, title: str) -> None:
         """Initialize a new movie vertex with the given title, and with
         its community being set to the title to start.
 
@@ -258,3 +258,12 @@ class Network:
                     # Adding negative weight as priority queue sorts from least to greatest
 
         return list_of_movies
+
+
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['queue'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
