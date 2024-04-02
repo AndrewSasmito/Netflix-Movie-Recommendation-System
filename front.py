@@ -56,7 +56,7 @@ selected_movies = set()  # store the movies we are working with
 
 
 def modify(lst) -> Any:
-    """Display movie options"""
+    """Initially display all movie options"""
     movies.delete(0, END)
     for movie in lst:
         movies.insert(END, movie)
@@ -77,7 +77,7 @@ def updater(event):
 
 
 def verify(event) -> Any:
-    """TODO: Complete docstring"""
+    """Match the user's text to possible movie titles"""
     if movie_entry.get() == '':
         lst = list_of_movies
     else:
@@ -89,7 +89,7 @@ def verify(event) -> Any:
 
 
 def recommend_movies():
-    """Function to handle the recommendation process"""
+    """Function to update recommended movies when recommended is pressed"""
     global selected_movies
     movie_entry.delete(0, tk.END)
     selected_movies = set()
@@ -98,7 +98,7 @@ def recommend_movies():
 
 
 def update_selected_movies(event=None):
-    """Insert the movies the user selected to our text label"""
+    """Insert the movies the user selected to our box of selected movies"""
     global selected_movies
     selected_movies_listbox.delete(0, tk.END)
     for movie in selected_movies:
