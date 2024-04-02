@@ -36,7 +36,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
 
         # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
 
-        next(reviews_file)  # skips first row because its a header
+        # next(reviews_file)  # skips first row because its a header
 
         user_ratings = {}      # users represents: dict[userid, list[movies watched]]
         rating_counter = 0      # want to get 1,000,000 valid ratings with O(N) algorithm, seems fine
