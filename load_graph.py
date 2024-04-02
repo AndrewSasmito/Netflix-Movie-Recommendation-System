@@ -31,7 +31,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
             movies_dict[int(line[0])] = line[2]
             graph.add_movie(movies_dict[int(line[0])])
             movie_counter += 1
-            if movie_counter == 10:
+            if movie_counter == 1000:
                 break
 
         # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
@@ -58,7 +58,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
                 # if rating_counter % 10000 == 0:
                 #     print(f'cnt: {rating_counter}')
 
-                if rating_counter == 1000:
+                if rating_counter == 1000000:
                     break
         # if ~500,000 users, 2 ratings per user, 2 x 10^ 6. If 1 user, 1,000,000 per user (impossible if we assume
         # each user rates a movie either 0 or 1 times. # 1000 users, 1000 ratings per user, 1x10^9
