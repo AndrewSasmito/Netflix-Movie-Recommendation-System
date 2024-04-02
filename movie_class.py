@@ -212,8 +212,8 @@ class Network:
         for community in communities_to_remove:
             self._communities.pop(community)
 
-    def get_best_movies(self, movies: list[Movie], limit: int) -> list[Movie]:
-        """Return a maximum length limit of the best _Movie objects connected to objects in movies
+    def get_best_movies(self, movies: list[Movie], limit: int) -> list[str]:
+        """Return a maximum length limit of the best _Movie object titles connected to objects in movies
         and in the same community.
 
         Raise a ValueError if the Movie object is not in this graph
@@ -225,16 +225,16 @@ class Network:
 
         for movie in movies:
             # Should not return itself
-            visited.add(movie)
+            visited.add(movie.title)
 
-            if movie not in self._movies:
+            if movie.title not in self._movies:
                 # Movie is not in the network
                 raise ValueError
 
             for neighbour in movie.neighbours:
-                if neighbour.community == movie.community and neighbour not in visited:
+                if neighbour.community == movie.community and neighbour.title not in visited:
                     # Checking if they are in the same community
-                    pq.put([-movie.neighbours[neighbour], neighbour])
+                    pq.put([-movie.neighbours[neighbour], neighbour.title])
                     # Adding negative weight as priority queue sorts from least to greatest
 
         for _ in range(limit):
@@ -243,18 +243,18 @@ class Network:
 
             movie = pq.get()
             # movie[0] = the edge weight (Inversed)
-            # movie[1] = the movie object
+            # movie[1] = the movie object title
             if movie[1] in visited:
-                # movie[1] has already been iterated over
+                # movie[1] title has already been iterated over
                 continue
 
             list_of_movies.append(movie[1])
             visited.add(movie[1])
 
-            for neighbour in movie[1].neighbours:
-                if neighbour.community == movie[1].community and neighbour not in visited:
+            for neighbour in self._movies[movie[1]].neighbours:
+                if neighbour.community == self._movies[movie[1]].community and neighbour.title not in visited:
                     # Checking if they are in the same community
-                    pq.put([-movie[1].neighbours[neighbour], neighbour])
+                    pq.put([-movie[1].neighbours[neighbour], neighbour.title])
                     # Adding negative weight as priority queue sorts from least to greatest
 
         return list_of_movies
