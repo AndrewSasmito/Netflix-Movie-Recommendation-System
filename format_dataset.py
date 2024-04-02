@@ -1,3 +1,8 @@
+"""CSC111 Project 2: Netflix Movie Recommendation System
+
+This is a file for formatting the reviews dataset of the Netflix Movie Recommendation System created by Saahil Kapasi,
+Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
+"""
 import csv
 import random
 
@@ -29,7 +34,7 @@ def create_large_formatted_dataset(file_path: str) -> None:
     with open(file_path, 'r') as read_file, open('data/shuffled_user_ratings.csv', 'w', newline='') as write_file:
         next(read_file)
         reader, writer = csv.reader(read_file), csv.writer(write_file)
-        for i in range(10):
+        for _ in range(10):
             values = []
             index = 0
             while index < 10000000:
@@ -47,4 +52,10 @@ def create_large_formatted_dataset(file_path: str) -> None:
 
 
 if __name__ == "__main__":
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['csv', 'random'],  # the names (strs) of imported modules
+        'allowed-io': ['create_formatted_dataset', 'create_large_formatted_dataset'],
+        'max-line-length': 120
+    })
     create_large_formatted_dataset('data/user_ratings.csv')
