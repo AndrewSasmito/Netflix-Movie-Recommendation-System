@@ -11,8 +11,8 @@ TODO:
 - Fix select bug: in progress
     each time you select a movie, it automatically selects the first movie in our entry box
     doesnt display selected movie in selected movies until you select another one
+- Add comments: in progress
 """
-
 
 root = tk.Tk()
 
@@ -28,16 +28,16 @@ root.title("Project 2 Window")
 label = tk.Label(root, text="Movie Recommender", font=('Arial', 80))
 label.pack(padx=20, pady=20)
 label2 = tk.Label(root, text="To begin, enter a movie you have watched or like, \nand your desired number of reviews",
-                  font=('Arial', 30))
+                  font=('Arial', 25))
 label2.pack(padx=20, pady=10)
 
-movie_input1 = Label(root, text="Selected Movies:", font=('Arial', 14))
+movie_input1 = Label(root, text="Selected Movies", font=('Arial', 20))
 movie_input1.pack()
 
 selected_movies_listbox = tk.Listbox(root, width=50, height=5)
 selected_movies_listbox.pack(pady=5)
 
-movie_input2 = Label(root, text="Enter Movie(s) By Clicking or Typing", font=('Arial', 14))
+movie_input2 = Label(root, text="Enter Movie(s) By Clicking or Typing", font=('Arial', 20))
 movie_input2.pack(pady=5)
 
 movie_entry = Entry(root, font=('Arial', 20))
@@ -46,10 +46,10 @@ movie_entry.pack(pady=5)
 movies = Listbox(root, width=50, height=5)
 movies.pack(pady=5)
 
-movie_input3 = Label(root, text="Maximum number of reviews:", font=('Arial', 14))
+movie_input3 = Label(root, text="Maximum number of reviews", font=('Arial', 20))
 movie_input3.pack(pady=5)
 
-spinbox = tk.Spinbox(root, from_=0, to=100)
+spinbox = tk.Spinbox(root, from_=0, to=50)
 spinbox.pack(padx=20, pady=5)
 
 selected_movies = set()  # store the movies we are working with
@@ -77,7 +77,7 @@ def updater(event):
 
 
 def verify(event) -> Any:
-    """idk"""
+    """TODO: Complete docstring"""
     if movie_entry.get() == '':
         lst = list_of_movies
     else:
@@ -109,7 +109,7 @@ selected_movies_listbox.bind("<<ListboxSelect>>", update_selected_movies)
 
 
 def add_movie():
-    """abcdeg"""
+    """TODO: Complete docstring"""
     global selected_movies
     selected_movies.add("Selected Movie")
     update_selected_movies()
