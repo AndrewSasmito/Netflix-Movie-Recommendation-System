@@ -254,7 +254,7 @@ class Network:
             for neighbour in self._movies[movie[1]].neighbours:
                 if neighbour.community == self._movies[movie[1]].community and neighbour.title not in visited:
                     # Checking if they are in the same community
-                    pq.put([-movie[1].neighbours[neighbour], neighbour.title])
+                    pq.put([-self._movies[movie[1]].neighbours[neighbour], neighbour.title])
                     # Adding negative weight as priority queue sorts from least to greatest
 
         return list_of_movies
