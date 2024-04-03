@@ -180,14 +180,7 @@ class Network:
         return self._communities
 
     def change_communities(self, vertex: Movie, new_community: str, add_density: float, rem_density: float) -> None:
-        """Move a movie to its neighbours community when it improves density"""
-        # print(vertex.title)
-        # print(vertex.title in self._movies)
-        # print(self.get_movies().keys())
-        # print(vertex.community in self._communities)
-        # print(self._communities.keys())
-        # print(vertex, vertex.title, self._communities[vertex.community][0])
-        # print(vertex.community in self._communities)
+        """Move a movie to its neighbours community when it improves modularity"""
 
         self._communities[vertex.community][0].remove(vertex)
         self._communities[vertex.community][1] -= rem_density
