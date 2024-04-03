@@ -53,9 +53,6 @@ class Network:
     _movies: dict[str, Movie]
     _communities: dict[str, list[set[Movie] | float]]
 
-    # TODO: DO WE NEED TO KNOW WHAT THE EDGES IN THE SUBGRAPH ARE (EXTRA MEMORY), OR IS KNOWING THE NUMBER AND
-    # TODO: INCREMENTING SUFFICIENT?
-
     def __init__(self) -> None:
         """Initialize an empty network graph (no vertices or edges)."""
         self._movies = {}
@@ -95,7 +92,8 @@ class Network:
             raise ValueError
 
     def add_sum_of_weights(self) -> None:
-        """TODO: Docstring for add_sum_weights"""
+        """This method finds the sum of weights of the neighbours of a movie in order to have a constant step
+        access to sum of weights during the modularity calculation"""
         for movie in self._movies:
             self._movies[movie].sum_weights = sum(self._movies[movie].neighbours.values())
 
@@ -172,15 +170,10 @@ class Network:
         else:
             raise ValueError
 
-    def get_all_vertices(self) -> set:
-        """Return a set of all movies in this graph."""
-        return set(self._movies.keys())
-
     def get_movies(self) -> dict[str, Movie]:
         """Return the movies (vertices) that belong to the graph. We need a method since _movies
         is a protected class"""
         return self._movies
-        # TODO: SHOULD WE RETURN SELF.MOVIES.COPY()?? EXTRA SPACE COMPLEXITY BUT MAYBE UEFUL IDK
 
     def get_communities(self) -> dict[str, list[set[Movie] | float]]:
         """Return the communities found in the graph"""
