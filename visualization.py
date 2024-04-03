@@ -27,8 +27,7 @@ def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
 
 def setup_graph(graph: movie_class.Network,
                 movie_names: list[str],
-                layout: str = 'spring_layout',
-                max_vertices: int = 5000) -> list:
+                layout: str = 'spring_layout') -> list:
     """Use plotly and networkx to setup the visuals for the given graph.
 
     Optional arguments:
@@ -54,38 +53,18 @@ def setup_graph(graph: movie_class.Network,
         for neighbour in movies[movie].neighbours:
             if neighbour not in visited and movies[movie].community in communities and neighbour.community == movies[movie].community:
                 graph_nx.add_edge(neighbour.title, movies[movie].title)
-    # graph_nx set up?
+
     pos = getattr(nx, layout)(graph_nx)
 
     x_values = [pos[k][0] for k in graph_nx.nodes]
     y_values = [pos[k][1] for k in graph_nx.nodes]
     labels = list(graph_nx.nodes)
 
-    # weights = nx.get_edge_attributes(graph_nx, 'weight')
-
     kinds = [graph_nx.nodes[k]['kind'] for k in graph_nx.nodes]
 
     # Generating the colours
     possible_colours = generate_color_scheme(graph)
     colours = [possible_colours[kind] for kind in kinds]
-
-    x_edges = []
-    y_edges = []
-    weight_positions = []
-
-    for edge in graph_nx.edges:
-        x1, x2 = pos[edge[0]][0], pos[edge[1]][0]
-        x_edges += [x1, x2, None]
-        y1, y2 = pos[edge[0]][1], pos[edge[1]][1]
-        y_edges += [y1, y2, None]
-        # weight_positions.append(((x1 + x2) / 2, (y1 + y2) / 2, weights[(edge[0], edge[1])]))
-
-    # trace3 = Scatter(x=x_edges,
-    #                  y=y_edges,
-    #                  mode='lines+text',
-    #                  name='edges',
-    #                  line=dict(color='rgb(220,220,220)', width=1),
-    #                  )
 
     trace4 = Scatter(x=x_values,
                      y=y_values,
@@ -101,16 +80,12 @@ def setup_graph(graph: movie_class.Network,
                      hoverlabel={'namelength': 0}
                      )
 
-    #data = [trace3, trace4]
-    data = [trace4]
-
-    return [weight_positions, data]
+    return [trace4]
 
 
 def visualize_weighted_graph(graph: movie_class.Network,
                              movies: list[str],
                              layout: str = 'spring_layout',
-                             max_vertices: int = 5000,
                              output_file: str = '') -> None:
     """Use plotly and networkx to visualize the given weighted graph.
 
@@ -121,11 +96,11 @@ def visualize_weighted_graph(graph: movie_class.Network,
             in your web browser)
     """
 
-    weight_positions, data = setup_graph(graph, movies, layout, max_vertices)
-    draw_graph(data, output_file, weight_positions)
+    data = setup_graph(graph, movies, layout)
+    draw_graph(data, output_file)
 
 
-def draw_graph(data: list, output_file: str = '', weight_positions=None) -> None:
+def draw_graph(data: list, output_file: str = '') -> None:
     """
     Draw graph based on given data.
 
@@ -140,24 +115,23 @@ def draw_graph(data: list, output_file: str = '', weight_positions=None) -> None
     fig.update_xaxes(showgrid=False, zeroline=False, visible=False)
     fig.update_yaxes(showgrid=False, zeroline=False, visible=False)
 
-    if weight_positions:
-        for w in weight_positions:
-            fig.add_annotation(
-                x=w[0], y=w[1],  # Text annotation position
-                xref="x", yref="y",  # Coordinate reference system
-                text=w[2],  # Text content
-                showarrow=False  # Hide arrow
-            )
-
     if output_file == '':
         fig.show()
     else:
         fig.write_image(output_file)
 
 
-graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 1000, 1000000)
-print('a')
-clustering.louvain(graph, 3)
-print('b')
-visualize_weighted_graph(graph, movies=['Dinosaur Planet', 'Character', "Screamers", 'Sick', '8 Man'])
-print('C')
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['movie_class'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
+
+    # graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 1000, 1000000)
+    # print('a')
+    # clustering.louvain(graph, 3)
+    # print('b')
+    # visualize_weighted_graph(graph, movies=['Dinosaur Planet', 'Character', "Screamers", 'Sick', '8 Man'])
+    # print('C')
