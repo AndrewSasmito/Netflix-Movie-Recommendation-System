@@ -63,7 +63,7 @@ def setup_graph(graph: movie_class.Network,
         visited.add(movies[movie])
         for neighbour in movies[movie].neighbours:
             if neighbour not in visited:
-                graph_nx.add_edge(neighbour.title, movies[movie].title, weight=neighbour.neighbours[movies[movie]])
+                graph_nx.add_edge(neighbour.title, movies[movie].title, weight=round(neighbour.neighbours[movies[movie]], 2))
 
 
     # graph_nx set up?
@@ -165,7 +165,7 @@ def draw_graph(data: list, output_file: str = '', weight_positions=None) -> None
         fig.write_image(output_file)
 
 
-graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 100, 100000)
+graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 20, 20000)
 print('a')
 clustering.louvain(graph, 3)
 print('b')
