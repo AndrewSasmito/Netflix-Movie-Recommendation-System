@@ -6,24 +6,6 @@ import colorsys
 import load_graph
 import clustering
 
-class GraphVisualization:
-    """
-    Graph Visualization class
-    """
-
-    colour_scheme: list[str]
-    line_colour: str
-    border_colour: str
-    movie_colour: str
-
-    def __init__(self, colour_scheme: list[str], line_colour: str, border_colour: str, movie_colour: str) -> None:
-        # In the format 'rgb(x,y,z)'
-        # Colour scheme, list of hexadecimals
-        self.colour_scheme = colour_scheme
-        self.line_colour = line_colour
-        self.border_colour = border_colour
-        self.movie_colour = movie_colour
-
 
 def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
     """
@@ -44,6 +26,7 @@ def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
 
 
 def setup_graph(graph: movie_class.Network,
+                movie_names: list[str],
                 layout: str = 'spring_layout',
                 max_vertices: int = 5000) -> list:
     """Use plotly and networkx to setup the visuals for the given graph.
@@ -55,16 +38,17 @@ def setup_graph(graph: movie_class.Network,
     # Creating the graph
     graph_nx = nx.Graph()
     movies = graph.get_movies()
-    visited = set()
-    for movie in movies:
+    visited, communities = set(), set()
+    for movie in movie_names:
         graph_nx.add_node(movie, kind=movies[movie].community)
+        communities.add(movies[movie].community)
+        visited.add(movies[movie])
 
     for movie in movies:
         visited.add(movies[movie])
         for neighbour in movies[movie].neighbours:
-            if neighbour not in visited:
+            if neighbour not in visited and movies[movie].community in communities and neighbour.community == movies[movie].community:
                 graph_nx.add_edge(neighbour.title, movies[movie].title, weight=round(neighbour.neighbours[movies[movie]], 2))
-
 
     # graph_nx set up?
     pos = getattr(nx, layout)(graph_nx)
