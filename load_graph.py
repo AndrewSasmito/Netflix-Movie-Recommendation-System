@@ -42,7 +42,7 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
         rating_counter = 0      # want to get 1,000,000 valid ratings with O(N) algorithm, seems fine
         for line in csv.reader(reviews_file):
             #   int (custid),rating(1-5),date, int( movieid)
-
+            # print(line)
             customer, rating, _, movie = line   # replaced date with _ since we don't use it anyways
 
             if int(movie) not in movies_dict:  # if the user rates a movie we don't consider
