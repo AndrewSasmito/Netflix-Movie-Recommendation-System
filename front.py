@@ -35,15 +35,17 @@ class TkinterApp:
         movie_input1 = tk.Label(self.root, text="Selected Movies", font=('Courier New', 20))
         movie_input1.pack()
 
-        self.selected_movies_listbox = tk.Listbox(self.root, width=50, height=5, selectmode='single')
+        self.selected_movies_listbox = tk.Listbox(self.root, width=50, height=5, selectmode='single')  # create dropdown
         self.selected_movies_listbox.pack(pady=5)
 
-        movie_input2 = tk.Label(self.root, text="Search for movie(s) by typing, and click on it.",
-                                font=('Courier New', 20))
+        movie_input2 = tk.Label(self.root, text="Start typing to find your movie, and then click on it.",
+font=('Courier New', 20))
         movie_input2.pack(pady=5)
 
         self.movie_entry = tk.Entry(self.root, font=('Courier New', 20))
         self.movie_entry.pack(pady=5)
+
+        self.movie_entry.bind("<KeyRelease>", self.verify)
 
         self.movies = tk.Listbox(self.root, width=50, height=5)
         self.movies.pack(pady=5)
@@ -51,10 +53,10 @@ class TkinterApp:
         movie_input3 = tk.Label(self.root, text="Maximum number of recommendations (1-5)", font=('Courier', 20))
         movie_input3.pack(pady=5)
 
-        self.spinbox = tk.Spinbox(self.root, from_=0, to=5)
+        self.spinbox = tk.Spinbox(self.root, from_=0, to=5)  # create input for # of reviews
         self.spinbox.pack(padx=20, pady=5)
 
-        # update our box of selected movies to include the movie we are currently selecting in our selection box
+        # update our box of selected movies to include the movie we selected in our selection box
         self.selected_movies_listbox.bind("<<ListboxSelect>>", self.update_selected_movies)
 
         button = tk.Button(self.root, text="Recommend", font=('Courier New', 30), command=self.recommend_movies)
@@ -62,12 +64,12 @@ class TkinterApp:
 
         self.modify(self.list_of_movies)
 
-        self.movies.bind("<<ListboxSelect>>", self.updater)  # create keybinds
+        self.movies.bind("<<ListboxSelect>>", self.updater)  # selecting a movie will trigger the updater function
 
     def updater(self, event: tk.Event) -> None:
         """Replace entered text with selected movie and store it.
         Raise an error if the user selected too many movies."""
-        if len(self.selected_movies) >= 5:
+        if len(self.selected_movies) >= 5:  # check if we have selected the right amount of movies
             # error message
             tk.messagebox.showinfo("Limit Reached",
                                    "You can only select up to 5 movies. Press recommend and try again.")
@@ -82,6 +84,8 @@ class TkinterApp:
 
     def modify(self, lst: list) -> Any:
         """Initially display all movie options in our dropdown menu"""
+        if not self.movie_entry.get():  # make our dropdown empty at first
+            return
         self.movies.delete(0, tk.END)  # clear dropdown menu so it updates
         for movie in lst:
             self.movies.insert(tk.END, movie)  # add each movie
@@ -91,7 +95,8 @@ class TkinterApp:
         if self.movie_entry.get() != '':  # if there is text,
             lst = []
             for i in self.list_of_movies:
-                if self.movie_entry.get().lower() in i.lower():
+                correct = self.movie_entry.get()
+                if correct.lower() in i.lower():
                     lst.append(i)  # add each corresponding movie to lst
             self.modify(lst)  # update
 
@@ -103,7 +108,7 @@ class TkinterApp:
         self.selected_movies = set()  # empty selected movies set
         self.spinbox.delete(0, tk.END)  # clear number of reviews
         self.spinbox.insert(0, '0')
-        self.movies.selection_clear(0, tk.END)  # need to cler selection in movies listbox
+        self.movies.selection_clear(0, tk.END)  # need to clear selection in movies listbox
 
     def update_selected_movies(self, event: tk.Event = None) -> None:
         """Insert the movies the user selected to our box of selected movies"""
@@ -118,18 +123,6 @@ def generate_movies(movies_file_path: str) -> list:
     with open(movies_file_path, 'r') as movies_file:
         for line in csv.reader(movies_file):
             movie_lst += [line[2]]
-    movie_lst.pop(0)  # remove first MovieTitle
+    movie_lst.pop(0)  # remove "MovieTitle"
     return movie_lst
 
-
-"""
-TODO:
-- Fix search: IPR
-- Fix movietitle: DONE
-- Fix select bug: DONE
-- Add comments: DONE
-"""
-
-root = tk.Tk()
-app = TkinterApp(root, 'movies.csv')
-app.root.mainloop()
