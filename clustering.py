@@ -1,20 +1,20 @@
 """TODO: EMPTY DOCSTRING"""
 
 import movie_class
-import networkx as nx
-import matplotlib.pyplot as plt
-import load_graph
 
 def sigma_in(community: list[set[movie_class.Movie] | float]):
-    """TODO: Docstring for """
+    """ A helper function to find the sum of all the weighted edges strictly inside community"""
     return community[1]
 
 
 def sigma_tot(community: list[set[movie_class.Movie] | float]) -> float:
+    """ A helper function to find the sum of all the edges inside the community. The sum of all
+    incident edges double counts edges in the community, so subtract that to get sum of all weighted
+    edges incident"""
     incident_edges = 0
     for vertex in community[0]:
         incident_edges += vertex.sum_weights
-    return incident_edges / 2  # TODO divide by 2 bc overcounting?
+    return incident_edges - sigma_in(community)
 
 
 def k_i_in(added_vertex: movie_class.Movie, community: list[set[movie_class.Movie] | float]) -> float:
@@ -83,3 +83,12 @@ def louvain(graph: movie_class.Network, epochs: int) -> None:
                 graph.change_communities(vertex, best_community, best_k_i_in, best_k_i_out)
                 vertex.community = best_community
                 # print(graph.get_communities())
+
+
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['movie_class'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
