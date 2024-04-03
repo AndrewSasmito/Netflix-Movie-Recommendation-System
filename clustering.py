@@ -61,6 +61,7 @@ def louvain(graph: movie_class.Network, epochs: int) -> None:
             for neighbour in vertex.neighbours:
                 # print(vertex_name, neighbour.title)
                 community = graph.get_communities()[neighbour.community]
+                # print(len(community))
                 sum_in = sigma_in(community)
                 sum_tot = sigma_tot(community)
                 ki = k_i(vertex)
@@ -70,7 +71,7 @@ def louvain(graph: movie_class.Network, epochs: int) -> None:
                 delta_q = (((sum_in + kin) / (2 * m)) - (((sum_tot + ki) / (2 * m)) ** 2)) - (
                             (sum_in / (2 * m)) - ((sum_tot / (2 * m)) ** 2) - (ki / (2 * m)) ** 2)
                 # print(delta_q)
-                if max_q < delta_q:
+                if max_q < delta_q and len(community[0]) < 50:
                     max_q = delta_q
                     best_community = neighbour.community
 
