@@ -32,7 +32,8 @@ def modify_weighted_edge(graph: movie_class.Network, movies_rated: list) -> None
                 graph.add_edge(movie1, movie2, weight)
 
 
-def load_movie_graph(reviews_file_path: str, movies_file_path: str, movie_limit: int = None, rating_limit: int = None) -> movie_class.Network:
+def load_movie_graph(reviews_file_path: str, movies_file_path: str, movie_limit: int = 1000,
+                     rating_limit: int = 1000000) -> movie_class.Network:
     """Returns a movie review weighted graph corresponding to the given datasets.
 
     Preconditions:
