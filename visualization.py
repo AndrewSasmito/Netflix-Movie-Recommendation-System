@@ -1,67 +1,82 @@
-"""CSC111 Winter 2024 Exercise 4 (Graphs Visualization)
-
-Module Description
-==================
-
-This module contains some Python functions that you can use to visualize the graphs
-you're working with on this assignment. You should not modify anything in this file.
-It will not be submitted for grading.
-
-Disclaimer: we didn't have time to make this file fully PythonTA-compliant!
-
-Copyright and Usage Information
-===============================
-
-This file is provided solely for the personal and private use of students
-taking CSC111 at the University of Toronto St. George campus. All forms of
-distribution of this code, whether as given or with any changes, are
-expressly prohibited. For more information on copyright for CSC111 materials,
-please consult our Course Syllabus.
-
-This file is Copyright (c) 2024 CSC111 Teaching Team
-"""
 import networkx as nx
 from plotly.graph_objs import Scatter, Figure
+import movie_class
+import colorsys
 
-import ex4_part2
+class GraphVisualization:
+    """
+    Graph Visualization class
+    """
 
-# Colours to use when visualizing different clusters.
-COLOUR_SCHEME = [
-    '#2E91E5', '#E15F99', '#1CA71C', '#FB0D0D', '#DA16FF', '#222A2A', '#B68100',
-    '#750D86', '#EB663B', '#511CFB', '#00A08B', '#FB00D1', '#FC0080', '#B2828D',
-    '#6C7C32', '#778AAE', '#862A16', '#A777F1', '#620042', '#1616A7', '#DA60CA',
-    '#6C4516', '#0D2A63', '#AF0038'
-]
+    colour_scheme: list[str]
+    line_colour: str
+    border_colour: str
+    movie_colour: str
 
-LINE_COLOUR = 'rgb(210,210,210)'
-VERTEX_BORDER_COLOUR = 'rgb(50, 50, 50)'
-BOOK_COLOUR = 'rgb(89, 205, 105)'
-USER_COLOUR = 'rgb(105, 89, 205)'
+    def __init__(self, colour_scheme: list[str], line_colour: str, border_colour: str, movie_colour: str) -> None:
+        # In the format 'rgb(x,y,z)'
+        # Colour scheme, list of hexadecimals
+        self.colour_scheme = colour_scheme
+        self.line_colour = line_colour
+        self.border_colour = border_colour
+        self.movie_colour = movie_colour
 
 
-def setup_graph(graph: ex4_part2.Graph,
+def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
+    """
+    Generate random colours
+    """
+    colors = {}
+    i = 0
+    for community in graph.get_communities():
+        hue = i / len(graph.get_communities())  # Varying the hue across the color spectrum
+        lightness = 0.5  # You can adjust lightness if needed
+        saturation = 0.7  # You can adjust saturation if needed
+        rgb = colorsys.hls_to_rgb(hue, lightness, saturation)
+        hex_color = '#{:02x}{:02x}{:02x}'.format(int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
+        colors[community] = hex_color
+        i += 1
+
+    return colors
+
+
+def setup_graph(graph: movie_class.Network,
                 layout: str = 'spring_layout',
-                max_vertices: int = 5000,
-                weighted: bool = False) -> list:
+                max_vertices: int = 5000) -> list:
     """Use plotly and networkx to setup the visuals for the given graph.
 
     Optional arguments:
         - weighted: True when weight data should be visualized
     """
 
-    graph_nx = graph.to_networkx(max_vertices)
+    # Creating the graph
+    graph_nx = nx.Graph()
+    movies = graph.get_movies()
+    visited = set()
+    for movie in movies:
+        graph_nx.add_node(movie, kind=movies[movie].community)
 
+    for movie in movies:
+        visited.add(movies[movie])
+        for neighbour in movies[movie].neighbours:
+            if neighbour not in visited:
+                graph_nx.add_edge(neighbour.title, movies[movie].title, weight=neighbour.neighbours[movies[movie]])
+
+
+    # graph_nx set up?
     pos = getattr(nx, layout)(graph_nx)
 
     x_values = [pos[k][0] for k in graph_nx.nodes]
     y_values = [pos[k][1] for k in graph_nx.nodes]
     labels = list(graph_nx.nodes)
-    if weighted:
-        weights = nx.get_edge_attributes(graph_nx, 'weight')
+
+    weights = nx.get_edge_attributes(graph_nx, 'weight')
 
     kinds = [graph_nx.nodes[k]['kind'] for k in graph_nx.nodes]
 
-    colours = [BOOK_COLOUR if kind == 'book' else USER_COLOUR for kind in kinds]
+    # Generating the colours
+    possible_colours = generate_color_scheme(graph)
+    colours = [possible_colours[kind] for kind in kinds]
 
     x_edges = []
     y_edges = []
@@ -72,14 +87,13 @@ def setup_graph(graph: ex4_part2.Graph,
         x_edges += [x1, x2, None]
         y1, y2 = pos[edge[0]][1], pos[edge[1]][1]
         y_edges += [y1, y2, None]
-        if weighted:
-            weight_positions.append(((x1 + x2) / 2, (y1 + y2) / 2, weights[(edge[0], edge[1])]))
+        weight_positions.append(((x1 + x2) / 2, (y1 + y2) / 2, weights[(edge[0], edge[1])]))
 
     trace3 = Scatter(x=x_edges,
                      y=y_edges,
                      mode='lines+text',
                      name='edges',
-                     line=dict(color=LINE_COLOUR, width=1),
+                     line=dict(color='rgb(220,220,220)', width=1),
                      )
 
     trace4 = Scatter(x=x_values,
@@ -89,7 +103,7 @@ def setup_graph(graph: ex4_part2.Graph,
                      marker=dict(symbol='circle-dot',
                                  size=5,
                                  color=colours,
-                                 line=dict(color=VERTEX_BORDER_COLOUR, width=0.5)
+                                 line=dict(color='rgb(50,50,50)', width=0.5)
                                  ),
                      text=labels,
                      hovertemplate='%{text}',
@@ -98,29 +112,10 @@ def setup_graph(graph: ex4_part2.Graph,
 
     data = [trace3, trace4]
 
-    if weighted:
-        return [weight_positions, data]
-    else:
-        return data
+    return [weight_positions, data]
 
 
-def visualize_graph(graph: ex4_part2.Graph,
-                    layout: str = 'spring_layout',
-                    max_vertices: int = 5000,
-                    output_file: str = '') -> None:
-    """Use plotly and networkx to visualize the given graph.
-
-    Optional arguments:
-        - layout: which graph layout algorithm to use
-        - max_vertices: the maximum number of vertices that can appear in the graph
-        - output_file: a filename to save the plotly image to (rather than displaying
-            in your web browser)
-    """
-
-    draw_graph(setup_graph(graph, layout, max_vertices), output_file)
-
-
-def visualize_weighted_graph(graph: ex4_part2.WeightedGraph,
+def visualize_weighted_graph(graph: movie_class.Network,
                              layout: str = 'spring_layout',
                              max_vertices: int = 5000,
                              output_file: str = '') -> None:
@@ -133,7 +128,7 @@ def visualize_weighted_graph(graph: ex4_part2.WeightedGraph,
             in your web browser)
     """
 
-    weight_positions, data = setup_graph(graph, layout, max_vertices, True)
+    weight_positions, data = setup_graph(graph, layout, max_vertices)
     draw_graph(data, output_file, weight_positions)
 
 
