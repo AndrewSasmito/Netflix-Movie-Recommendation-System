@@ -25,24 +25,24 @@ class TkinterApp:
 
         self.root.geometry("2560x1600")  # initialize window
         self.root.title("Project 2 Window")
-        label = tk.Label(self.root, text="Movie Recommender", font=('Courier', 80))
+        label = tk.Label(self.root, text="Movie Recommender", font=('Courier New', 80))
         label.pack(padx=20, pady=20)
         label2 = tk.Label(self.root,
                           text="To begin, enter a movie you have watched or like, \nand your desired number of reviews",
-                          font=('Courier', 25))
+                          font=('Courier New', 25))
         label2.pack(padx=20, pady=10)
 
-        movie_input1 = tk.Label(self.root, text="Selected Movies", font=('Courier', 20))
+        movie_input1 = tk.Label(self.root, text="Selected Movies", font=('Courier New', 20))
         movie_input1.pack()
 
-        self.selected_movies_listbox = tk.Listbox(self.root, width=50, height=5)
+        self.selected_movies_listbox = tk.Listbox(self.root, width=50, height=5, selectmode='single')
         self.selected_movies_listbox.pack(pady=5)
 
-        movie_input2 = tk.Label(self.root, text="Enter movie(s) by typing, click movie twice, and hit enter.",
-                                font=('Courier', 20))
+        movie_input2 = tk.Label(self.root, text="Search for movie(s) by typing, and click on it.",
+                                font=('Courier New', 20))
         movie_input2.pack(pady=5)
 
-        self.movie_entry = tk.Entry(self.root, font=('Courier', 20))
+        self.movie_entry = tk.Entry(self.root, font=('Courier New', 20))
         self.movie_entry.pack(pady=5)
 
         self.movies = tk.Listbox(self.root, width=50, height=5)
@@ -57,7 +57,7 @@ class TkinterApp:
         # update our box of selected movies to include the movie we are currently selecting in our selection box
         self.selected_movies_listbox.bind("<<ListboxSelect>>", self.update_selected_movies)
 
-        button = tk.Button(self.root, text="Recommend", font=('Courier', 30), command=self.recommend_movies)
+        button = tk.Button(self.root, text="Recommend", font=('Courier New', 30), command=self.recommend_movies)
         button.pack()
 
         self.modify(self.list_of_movies)
@@ -72,12 +72,13 @@ class TkinterApp:
             tk.messagebox.showinfo("Limit Reached",
                                    "You can only select up to 5 movies. Press recommend and try again.")
             return
-
-        movie_name = self.movies.get(tk.ACTIVE)  # get currently selected item
-        self.movie_entry.delete(0, tk.END)  # delete all movies
-        self.movie_entry.insert(0, movie_name)  # insert current movie to our entries
-        self.selected_movies.add(movie_name)  # add selected movie to selected_movies
-        self.update_selected_movies()  # update selected movies
+        if self.movies.curselection():  # check if there already is a selection
+            index = self.movies.curselection()[0]
+            movie_name = self.movies.get(index)  # if so, get currently selected item
+            self.movie_entry.delete(0, tk.END)  # delete all movies
+            self.movie_entry.insert(0, movie_name)  # insert current movie to our entries
+            self.selected_movies.add(movie_name)  # add selected movie to selected_movies
+            self.update_selected_movies()  # update selected movies
 
     def modify(self, lst: list) -> Any:
         """Initially display all movie options in our dropdown menu"""
@@ -102,6 +103,7 @@ class TkinterApp:
         self.selected_movies = set()  # empty selected movies set
         self.spinbox.delete(0, tk.END)  # clear number of reviews
         self.spinbox.insert(0, '0')
+        self.movies.selection_clear(0, tk.END)  # need to cler selection in movies listbox
 
     def update_selected_movies(self, event: tk.Event = None) -> None:
         """Insert the movies the user selected to our box of selected movies"""
@@ -122,11 +124,9 @@ def generate_movies(movies_file_path: str) -> list:
 
 """
 TODO:
-- Fix search: in progress
+- Fix search: IPR
 - Fix movietitle: DONE
-- Fix select bug: half done
-    each time you select a movie, it automatically selects the first movie in our entry box
-    doesnt display selected movie in selected movies until you select another one
+- Fix select bug: DONE
 - Add comments: DONE
 """
 
