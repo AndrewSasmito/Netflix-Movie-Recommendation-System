@@ -3,8 +3,6 @@
 import csv
 import movie_class
 
-# TODO: took 10 off
-
 
 def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
     """Determine the edge weight to increment the weight between movies by. The idea is that if a given user
@@ -79,3 +77,12 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_cla
     graph.add_sum_of_weights()
 
     return graph
+
+
+if __name__ == '__main__':
+    import python_ta
+    python_ta.check_all(config={
+        'extra-imports': ['csv, movie_class'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
