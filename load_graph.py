@@ -45,19 +45,18 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str, movie_limit:
     graph = movie_class.Network()
 
     with open(reviews_file_path, 'r') as reviews_file, open(movies_file_path, 'r') as movies_file:
-
         next(movies_file)
         movies_dict: dict[int, str] = {}
-        movie_counter = 0
+        counter = 0
         for line in csv.reader(movies_file):
             movies_dict[int(line[0])] = line[2]
             graph.add_movie(movies_dict[int(line[0])])
-            movie_counter += 1
-            if movie_counter == movie_limit:
+            counter += 1
+            if counter == movie_limit:
                 break
 
         user_ratings = {}
-        rating_counter = 0
+        counter = 0
         for line in csv.reader(reviews_file):
             customer, rating, _, movie = line
 
@@ -66,9 +65,9 @@ def load_movie_graph(reviews_file_path: str, movies_file_path: str, movie_limit:
                     user_ratings[customer] = []
 
                 user_ratings[customer].append((movies_dict[int(movie)], int(rating)))
-                rating_counter += 1
+                counter += 1
 
-                if rating_counter == rating_limit:
+                if counter == rating_limit:
                     break
 
         for user in user_ratings:
