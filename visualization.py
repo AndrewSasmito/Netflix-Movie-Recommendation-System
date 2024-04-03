@@ -1,10 +1,12 @@
+"""CSC111 Project 2: Netflix Movie Recommendation System
+
+This is the graph implementation file of the Netflix Movie Recommendation System created by Saahil Kapasi,
+Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
+"""
+import colorsys
 import networkx as nx
 from plotly.graph_objs import Scatter, Figure
 import movie_class
-import colorsys
-
-import load_graph
-import clustering
 
 
 def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
@@ -18,6 +20,7 @@ def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
         lightness = 0.5  # You can adjust lightness if needed
         saturation = 0.7  # You can adjust saturation if needed
         rgb = colorsys.hls_to_rgb(hue, lightness, saturation)
+        # TODO Put hex_color into an f-string
         hex_color = '#{:02x}{:02x}{:02x}'.format(int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
         colors[community] = hex_color
         i += 1
@@ -25,16 +28,10 @@ def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
     return colors
 
 
-def setup_graph(graph: movie_class.Network,
-                movie_names: list[str],
-                layout: str = 'spring_layout') -> list:
-    """Use plotly and networkx to setup the visuals for the given graph.
-
-    Optional arguments:
-        - weighted: True when weight data should be visualized
+def generate_graph_nx(graph: movie_class.Network, movie_names: list[str]) -> nx.classes.Graph():
     """
-
-    # Creating the graph
+    Generate the networkx graph
+    """
     graph_nx = nx.Graph()
     movies = graph.get_movies()
     visited, communities = set(), set()
@@ -51,8 +48,23 @@ def setup_graph(graph: movie_class.Network,
             continue
         visited.add(movies[movie])
         for neighbour in movies[movie].neighbours:
-            if neighbour not in visited and movies[movie].community in communities and neighbour.community == movies[movie].community:
+            if (neighbour not in visited and movies[movie].community in communities and neighbour.
+                    community == movies[movie].community):
                 graph_nx.add_edge(neighbour.title, movies[movie].title)
+    return graph_nx
+
+
+def setup_graph(graph: movie_class.Network,
+                movie_names: list[str],
+                layout: str = 'spring_layout') -> list:
+    """Use plotly and networkx to setup the visuals for the given graph.
+
+    Optional arguments:
+        - weighted: True when weight data should be visualized
+    """
+
+    # Creating the graph
+    graph_nx = generate_graph_nx(graph, movie_names)
 
     pos = getattr(nx, layout)(graph_nx)
 
@@ -70,11 +82,8 @@ def setup_graph(graph: movie_class.Network,
                      y=y_values,
                      mode='markers',
                      name='nodes',
-                     marker=dict(symbol='circle-dot',
-                                 size=10,
-                                 color=colours,
-                                 line=dict(color='rgb(50,50,50)', width=0.5)
-                                 ),
+                     marker={"symbol": 'circle-dot', "size": 10, "color": colours,
+                             "line": {"color": 'rgb(50,50,50)', "width": 0.5}},
                      text=labels,
                      hovertemplate='%{text}',
                      hoverlabel={'namelength': 0}
@@ -124,7 +133,8 @@ def draw_graph(data: list, output_file: str = '') -> None:
 if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
-        'extra-imports': ['movie_class'],  # the names (strs) of imported modules
+        'extra-imports': ['movie_class', 'networkx', 'plotly.graph_objs',
+                          'colorsys', 'load_graph', 'clustering'],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
