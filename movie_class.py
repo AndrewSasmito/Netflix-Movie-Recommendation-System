@@ -171,16 +171,15 @@ class Network:
             raise ValueError
 
     def get_movies(self) -> dict[str, Movie]:
-        """Return the movies (vertices) that belong to the graph. We need a method since _movies
-        is a protected class"""
+        """A getter method that returns the movies (vertices) found in the graph."""
         return self._movies
 
     def get_communities(self) -> dict[str, list[set[Movie] | float]]:
-        """Return the communities found in the graph"""
+        """A getter method that returns the communities found in the graph."""
         return self._communities
 
     def change_communities(self, vertex: Movie, new_community: str, add_density: float, rem_density: float) -> None:
-        """Move a movie to its neighbours community when it improves modularity"""
+        """Moves a movie to a new community and update its density"""
 
         self._communities[vertex.community][0].remove(vertex)
         self._communities[vertex.community][1] -= rem_density
