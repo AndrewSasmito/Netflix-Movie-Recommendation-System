@@ -1,78 +1,77 @@
-"""This file is responsible for loading in the graph that we use"""
+"""CSC111 Project 2: Netflix Movie Recommendation System
 
+This file contains functions for loading the graph used for
+the Netflix Movie Recommendation System created by Saahil Kapasi, Andrew Sasmito, Fiona Verzivolli,
+and Naoroj Farhan to be submitted for the second CSC111 Project.
+"""
 import csv
 import movie_class
 
 
 def determine_edge_weight(rating1: int | float, rating2: int | float) -> float:
-    """Determine the edge weight to increment the weight between movies by. The idea is that if a given user
-    gives a pair of movies the exact same rating, the 'correlation' between the movies is exact and we increment
-    edge weight by 1. If a user rates a movie 5 stars and another movie 0 stars, increment the weight by 0
-    The below formula captures this premise"""
+    """Determines the edge weight to increment the weight between movies by.
+
+    If a user gives a pair of movies the exact same rating, the 'correlation' between the movies is exact,
+    and we increment edge weight by 1. If a user rates a movie 5 stars and another movie 0 stars,
+    increment the weight by 0.
+    """
     return 1 - abs(rating1 - rating2) / 5
 
 
-def load_movie_graph(reviews_file_path: str, movies_file_path: str) -> movie_class.Network:
-    """
-    Load a weighted review_graph
-    """
-    graph = movie_class.Network()   # creates a new empty graph
+def modify_weighted_edge(graph: movie_class.Network, movies_rated: list) -> None:
+    """Given a graph and a list of movies rated by a user, adjust the weight of the edges between each
+    of the movies, or create a new weighted edge if one is not already present."""
+    for i in range(len(movies_rated)):
+        for j in range(i + 1, len(movies_rated)):
+            movie1, movie2 = movies_rated[i][0], movies_rated[j][0]
+            weight = determine_edge_weight(movies_rated[i][1], movies_rated[j][1])
 
-    # NOTE: our objective is to make a graph of the first 1000 movies for easier computation later on
+            if weight > 0 and graph.adjacent(movie1, movie2):
+                graph.increment_edge(movie1, movie2, weight)
+            elif weight > 0:
+                graph.add_edge(movie1, movie2, weight)
+
+
+def load_movie_graph(reviews_file_path: str, movies_file_path: str, size: int = None) -> movie_class.Network:
+    """Returns a movie review weighted graph corresponding to the given datasets.
+
+    Preconditions:
+        - reviews_file_path is the path to a CSV file corresponding to the movie review data
+        of the format <custID, rating, date, movieID>. The file should also have no header.
+        - movies_file_path is the path to a CSV file corresponding to the movie data
+        of the format <movieId, releaseYear, title>. The file should have a header.
+    """
+    graph = movie_class.Network()
 
     with open(reviews_file_path, 'r') as reviews_file, open(movies_file_path, 'r') as movies_file:
 
-        next(movies_file)               # skips first row because it is a header
-        movies_dict: dict[int, str] = {}    # mapping of movieid (1-17700) to the movie_name (string)
+        next(movies_file)
+        movies_dict: dict[int, str] = {}
         movie_counter = 0
-        for line in csv.reader(movies_file):            # NOTE: iterates 1000 times, seems fine with O(N)
+        for line in csv.reader(movies_file):
             movies_dict[int(line[0])] = line[2]
             graph.add_movie(movies_dict[int(line[0])])
             movie_counter += 1
             if movie_counter == 1000:
                 break
 
-        # NOTE: at this point, our graph has 1000 movie vertices, we now move on to the phase where we generate edges
-
-        # next(reviews_file)  # skips first row because its a header
-
-        user_ratings = {}      # users represents: dict[userid, list[movies watched]]
-        rating_counter = 0      # want to get 1,000,000 valid ratings with O(N) algorithm, seems fine
+        user_ratings = {}
+        rating_counter = 0
         for line in csv.reader(reviews_file):
-            #   int (custid),rating(1-5),date, int( movieid)
-            # print(line)
-            customer, rating, _, movie = line   # replaced date with _ since we don't use it anyways
+            customer, rating, _, movie = line
 
-            if int(movie) not in movies_dict:  # if the user rates a movie we don't consider
-                pass
-            else:
-
-                if customer not in user_ratings:   # if we haven't seen this customer before, add them to dictionary
+            if int(movie) in movies_dict:
+                if customer not in user_ratings:
                     user_ratings[customer] = []
 
-                user_ratings[customer].append((movies_dict[int(movie)], int(rating)))  # adding tuple of (movie, rating)
+                user_ratings[customer].append((movies_dict[int(movie)], int(rating)))
                 rating_counter += 1
 
-                # if rating_counter % 10000 == 0:
-                #     print(f'cnt: {rating_counter}')
-
-                if rating_counter == 1000000:
+                if rating_counter == size:
                     break
-        # if ~500,000 users, 2 ratings per user, 2 x 10^ 6. If 1 user, 1,000,000 per user (impossible if we assume
-        # each user rates a movie either 0 or 1 times. # 1000 users, 1000 ratings per user, 1x10^9
-        for user in user_ratings:                       # upto 480,000 users 4.8 x 10^6
-            movies_rated = user_ratings[user]
 
-            # The goal is to determine a relationship between every pair of movies that a given user rates
-            for i1 in range(len(movies_rated)):              # upto 10^3
-                for i2 in range(i1 + 1, len(movies_rated)):  # upto 10^3
-                    movie1, movie2 = movies_rated[i1][0], movies_rated[i2][0]
-                    weight = determine_edge_weight(movies_rated[i1][1], movies_rated[i2][1])
-
-                    if weight > 0 and graph.adjacent(movie1, movie2):
-                        graph.increment_edge(movie1, movie2, weight)
-                    elif weight > 0:
-                        graph.add_edge(movie1, movie2, weight)
+        for user in user_ratings:
+            modify_weighted_edge(graph, user_ratings[user])
 
     graph.add_sum_of_weights()
 
@@ -83,6 +82,6 @@ if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
         'extra-imports': ['csv, movie_class'],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'allowed-io': ['load_movie_graph'],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
