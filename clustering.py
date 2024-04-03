@@ -75,7 +75,7 @@ def louvain_helper(graph: movie_class.Network, vertex: movie_class.Movie, m: flo
         community = graph.get_communities()[neighbour.community]
         delta_q = calculate_delta_q(community, vertex, m)
 
-        if max_q < delta_q and len(community[0]) < 50:
+        if max_q < delta_q and len(community[0]) < 25:
             max_q = delta_q
             best_community = neighbour.community
 
@@ -99,6 +99,7 @@ def louvain(graph: movie_class.Network, epochs: int) -> None:
     for _ in range(epochs):
         for vertex_name in graph.get_movies():
             louvain_helper(graph, graph.get_movies()[vertex_name], m)
+    graph.remove_empty_communities()
 
 
 if __name__ == '__main__':
