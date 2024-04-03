@@ -42,14 +42,18 @@ def setup_graph(graph: movie_class.Network,
     for movie in movie_names:
         graph_nx.add_node(movie, kind=movies[movie].community)
         communities.add(movies[movie].community)
-        visited.add(movies[movie])
 
     for movie in movies:
+        if movies[movie].community in communities:
+            graph_nx.add_node(movie, kind=movies[movie].community)
+
+    for movie in movies:
+        if movies[movie].community not in communities:
+            continue
         visited.add(movies[movie])
         for neighbour in movies[movie].neighbours:
             if neighbour not in visited and movies[movie].community in communities and neighbour.community == movies[movie].community:
-                graph_nx.add_edge(neighbour.title, movies[movie].title, weight=round(neighbour.neighbours[movies[movie]], 2))
-
+                graph_nx.add_edge(neighbour.title, movies[movie].title)
     # graph_nx set up?
     pos = getattr(nx, layout)(graph_nx)
 
@@ -57,7 +61,7 @@ def setup_graph(graph: movie_class.Network,
     y_values = [pos[k][1] for k in graph_nx.nodes]
     labels = list(graph_nx.nodes)
 
-    weights = nx.get_edge_attributes(graph_nx, 'weight')
+    # weights = nx.get_edge_attributes(graph_nx, 'weight')
 
     kinds = [graph_nx.nodes[k]['kind'] for k in graph_nx.nodes]
 
@@ -74,21 +78,21 @@ def setup_graph(graph: movie_class.Network,
         x_edges += [x1, x2, None]
         y1, y2 = pos[edge[0]][1], pos[edge[1]][1]
         y_edges += [y1, y2, None]
-        weight_positions.append(((x1 + x2) / 2, (y1 + y2) / 2, weights[(edge[0], edge[1])]))
+        # weight_positions.append(((x1 + x2) / 2, (y1 + y2) / 2, weights[(edge[0], edge[1])]))
 
-    trace3 = Scatter(x=x_edges,
-                     y=y_edges,
-                     mode='lines+text',
-                     name='edges',
-                     line=dict(color='rgb(220,220,220)', width=1),
-                     )
+    # trace3 = Scatter(x=x_edges,
+    #                  y=y_edges,
+    #                  mode='lines+text',
+    #                  name='edges',
+    #                  line=dict(color='rgb(220,220,220)', width=1),
+    #                  )
 
     trace4 = Scatter(x=x_values,
                      y=y_values,
                      mode='markers',
                      name='nodes',
                      marker=dict(symbol='circle-dot',
-                                 size=5,
+                                 size=10,
                                  color=colours,
                                  line=dict(color='rgb(50,50,50)', width=0.5)
                                  ),
@@ -97,12 +101,14 @@ def setup_graph(graph: movie_class.Network,
                      hoverlabel={'namelength': 0}
                      )
 
-    data = [trace3, trace4]
+    #data = [trace3, trace4]
+    data = [trace4]
 
     return [weight_positions, data]
 
 
 def visualize_weighted_graph(graph: movie_class.Network,
+                             movies: list[str],
                              layout: str = 'spring_layout',
                              max_vertices: int = 5000,
                              output_file: str = '') -> None:
@@ -115,7 +121,7 @@ def visualize_weighted_graph(graph: movie_class.Network,
             in your web browser)
     """
 
-    weight_positions, data = setup_graph(graph, layout, max_vertices)
+    weight_positions, data = setup_graph(graph, movies, layout, max_vertices)
     draw_graph(data, output_file, weight_positions)
 
 
@@ -149,9 +155,9 @@ def draw_graph(data: list, output_file: str = '', weight_positions=None) -> None
         fig.write_image(output_file)
 
 
-graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 20, 20000)
+graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 1000, 1000000)
 print('a')
 clustering.louvain(graph, 3)
 print('b')
-visualize_weighted_graph(graph)
+visualize_weighted_graph(graph, movies=['Dinosaur Planet', 'Character', "Screamers", 'Sick', '8 Man'])
 print('C')
