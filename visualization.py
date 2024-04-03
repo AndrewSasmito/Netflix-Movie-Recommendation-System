@@ -3,6 +3,9 @@ from plotly.graph_objs import Scatter, Figure
 import movie_class
 import colorsys
 
+import load_graph
+import clustering
+
 class GraphVisualization:
     """
     Graph Visualization class
@@ -160,3 +163,11 @@ def draw_graph(data: list, output_file: str = '', weight_positions=None) -> None
         fig.show()
     else:
         fig.write_image(output_file)
+
+
+graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 100, 100000)
+print('a')
+clustering.louvain(graph, 3)
+print('b')
+visualize_weighted_graph(graph)
+print('C')
