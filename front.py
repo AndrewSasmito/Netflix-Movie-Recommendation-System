@@ -1,3 +1,4 @@
+"""A file to run the front end of the movie recommendation system"""
 import csv
 import tkinter as tk
 from typing import Any
@@ -39,7 +40,7 @@ class TkinterApp:
         self.selected_movies_listbox.pack(pady=5)
 
         movie_input2 = tk.Label(self.root, text="Start typing to find your movie, and then click on it.",
-font=('Courier New', 20))
+                                font=('Courier New', 20))
         movie_input2.pack(pady=5)
 
         self.movie_entry = tk.Entry(self.root, font=('Courier New', 20))
@@ -126,3 +127,15 @@ def generate_movies(movies_file_path: str) -> list:
     movie_lst.pop(0)  # remove "MovieTitle"
     return movie_lst
 
+
+if __name__ == '__main__':
+    # root = tk.Tk()
+    # app = TkinterApp(root, 'data/movies.csv')
+    # app.root.mainloop()
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['csv, tkinter, '],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
