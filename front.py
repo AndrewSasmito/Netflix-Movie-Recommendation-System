@@ -17,6 +17,7 @@ class TkinterApp:
     spinbox: tk.Spinbox
     selected_movies_listbox: tk.Listbox
     graph: movie_class.Network
+    movie_recommendations: tk.Listbox
 
     def __init__(self, window_root: tk.Tk, graph: movie_class.Network) -> None:
         """Function to create our user interface window. Includes all tkinter widgets."""
@@ -69,8 +70,6 @@ class TkinterApp:
         self.modify(self.list_of_movies)
 
         self.movies.bind("<<ListboxSelect>>", self.updater)  # selecting a movie will trigger the updater function
-
-        self.movie_recommendations = []
 
         # initialize the movie_recommendations listbox
         self.movie_recommendations = tk.Listbox(self.root, width=50, height=5)
