@@ -1,14 +1,15 @@
 """A file to run the front end of the movie recommendation system"""
-import csv
 import tkinter as tk
 from typing import Any
+import movie_class
+from visualization import visualize_weighted_graph
 
 
 class TkinterApp:
     """Class that stores all of our information for the frontend interface.
     This includes the initialization (creating our window and tkinter widgets), as
     well as the methods needed to make our frontend interactive."""
-
+    recommendations: list[str]
     selected_movies: set
     list_of_movies: list
     root: tk.Tk
@@ -16,12 +17,14 @@ class TkinterApp:
     movie_entry: tk.Entry
     spinbox: tk.Spinbox
     selected_movies_listbox: tk.Listbox
+    graph: movie_class.Network
 
-    def __init__(self, window_root: tk.Tk, movies_file_path: str) -> None:
+    def __init__(self, window_root: tk.Tk, movies_file_path: str, graph: movie_class.Network) -> None:
         """Function to create our user interface window. Includes all tkinter widgets."""
+        self.graph = graph
         self.selected_movies = set()
         self.recommendations = []
-        self.list_of_movies = generate_movies(movies_file_path)
+        self.list_of_movies = list(self.graph.get_movies().keys())
         self.root = window_root
 
         self.root.geometry("1920x1080")  # initialize window
@@ -111,6 +114,7 @@ class TkinterApp:
     def recommend_movies(self) -> None:
         """Function to update recommended movies when recommended is pressed
         and reset several visual elements, such as """
+        self.recommendations = self.graph.get_best_movies(list(self.selected_movies), 5)
         self.movie_entry.delete(0, tk.END)  # clear search bar
         self.selected_movies_listbox.delete(0, tk.END)  # clear selected movies box
         self.selected_movies = set()  # empty selected movies set
@@ -118,6 +122,7 @@ class TkinterApp:
         self.spinbox.insert(0, '1')
         self.movies.selection_clear(0, tk.END)  # need to clear selection in movies listbox
         self.display_recommendations(self.recommendations)
+        visualize_weighted_graph(self.graph, self.recommendations)
 
     def update_selected_movies(self, event: tk.Event = None) -> None:
         """Insert the movies the user selected to our box of selected movies"""
@@ -125,20 +130,16 @@ class TkinterApp:
         for movie in self.selected_movies:  # after clearing,
             self.selected_movies_listbox.insert(tk.END, movie)
 
-
-def generate_movies(movies_file_path: str) -> list:
-    """Function needed to store movies in a list for our search feature"""
-    movie_lst = []
-    with open(movies_file_path, 'r') as movies_file:
-        for line in csv.reader(movies_file):
-            movie_lst += [line[2]]
-    movie_lst.pop(0)  # remove "MovieTitle"
-    return movie_lst
+    def run(self) -> None:
+        """Run the GUI"""
+        self.root.mainloop()
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
+    import python_ta
 
-    app = TkinterApp(root, 'movies.csv')
-    app.root.mainloop()
-
+    python_ta.check_all(config={
+        'extra-imports': ['csv', 'tkinter', 'movie_class', 'visualization'],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
