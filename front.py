@@ -118,7 +118,7 @@ class TkinterApp:
 
     def recommend_movies(self) -> None:
         """Function to update recommended movies when recommended is pressed
-        and reset several visual elements, such as """
+        and reset several visual elements."""
         recommendations = self.graph.get_best_movies(list(self.selected_movies), 5)
         self.display_recommendations(recommendations)
         visualize_weighted_graph(self.graph, list(self.selected_movies))
