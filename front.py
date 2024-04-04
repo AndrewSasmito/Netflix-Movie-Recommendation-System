@@ -2,7 +2,6 @@
 import csv
 import tkinter as tk
 from typing import Any
-from tkinter import messagebox
 
 
 class TkinterApp:
@@ -21,10 +20,11 @@ class TkinterApp:
     def __init__(self, window_root: tk.Tk, movies_file_path: str) -> None:
         """Function to create our user interface window. Includes all tkinter widgets."""
         self.selected_movies = set()
+        self.recommendations = []
         self.list_of_movies = generate_movies(movies_file_path)
         self.root = window_root
 
-        self.root.geometry("2560x1600")  # initialize window
+        self.root.geometry("1920x1080")  # initialize window
         self.root.title("Project 2 Window")
         label = tk.Label(self.root, text="Movie Recommender", font=('Courier New', 80))
         label.pack(padx=20, pady=20)
@@ -54,7 +54,7 @@ class TkinterApp:
         movie_input3 = tk.Label(self.root, text="Maximum number of recommendations (1-5)", font=('Courier', 20))
         movie_input3.pack(pady=5)
 
-        self.spinbox = tk.Spinbox(self.root, from_=0, to=5)  # create input for # of reviews
+        self.spinbox = tk.Spinbox(self.root, from_=1, to=5)  # create input for # of reviews
         self.spinbox.pack(padx=20, pady=5)
 
         # update our box of selected movies to include the movie we selected in our selection box
@@ -67,14 +67,15 @@ class TkinterApp:
 
         self.movies.bind("<<ListboxSelect>>", self.updater)  # selecting a movie will trigger the updater function
 
+        self.movie_recommendations = []
+
+        # initialize the movie_recommendations listbox
+        self.movie_recommendations = tk.Listbox(self.root, width=50, height=5)
+        self.movie_recommendations.pack(pady=5)
+
     def updater(self, event: tk.Event) -> None:
         """Replace entered text with selected movie and store it.
         Raise an error if the user selected too many movies."""
-        if len(self.selected_movies) >= 5:  # check if we have selected the right amount of movies
-            # error message
-            tk.messagebox.showinfo("Limit Reached",
-                                   "You can only select up to 5 movies. Press recommend and try again.")
-            return
         if self.movies.curselection():  # check if there already is a selection
             index = self.movies.curselection()[0]
             movie_name = self.movies.get(index)  # if so, get currently selected item
@@ -101,6 +102,12 @@ class TkinterApp:
                     lst.append(i)  # add each corresponding movie to lst
             self.modify(lst)  # update
 
+    def display_recommendations(self, movie_list: list) -> None:
+        """Add the recommendations to our GUI"""
+        self.movie_recommendations.delete(0, tk.END)
+        for movie in movie_list:
+            self.movie_recommendations.insert(0, movie)
+
     def recommend_movies(self) -> None:
         """Function to update recommended movies when recommended is pressed
         and reset several visual elements, such as """
@@ -108,8 +115,9 @@ class TkinterApp:
         self.selected_movies_listbox.delete(0, tk.END)  # clear selected movies box
         self.selected_movies = set()  # empty selected movies set
         self.spinbox.delete(0, tk.END)  # clear number of reviews
-        self.spinbox.insert(0, '0')
+        self.spinbox.insert(0, '1')
         self.movies.selection_clear(0, tk.END)  # need to clear selection in movies listbox
+        self.display_recommendations(self.recommendations)
 
     def update_selected_movies(self, event: tk.Event = None) -> None:
         """Insert the movies the user selected to our box of selected movies"""
@@ -129,13 +137,8 @@ def generate_movies(movies_file_path: str) -> list:
 
 
 if __name__ == '__main__':
-    # root = tk.Tk()
-    # app = TkinterApp(root, 'data/movies.csv')
-    # app.root.mainloop()
-    import python_ta
+    root = tk.Tk()
 
-    python_ta.check_all(config={
-        'extra-imports': ['csv, tkinter, '],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
-        'max-line-length': 120
-    })
+    app = TkinterApp(root, 'movies.csv')
+    app.root.mainloop()
+
