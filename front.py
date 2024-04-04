@@ -26,24 +26,25 @@ class TkinterApp:
         self.recommendations = []
         self.list_of_movies = list(self.graph.get_movies().keys())
         self.root = window_root
+        self.root.configure(background='#3B3B3B')
 
         self.root.geometry("1920x1080")  # initialize window
         self.root.title("Project 2 Window")
-        label = tk.Label(self.root, text="Movie Recommender", font=('Courier New', 80))
+        label = tk.Label(self.root, text="Movie Recommender", font=('Courier New', 80), bg='#3B3B3B', fg="white")
         label.pack(padx=20, pady=20)
         label2 = tk.Label(self.root,
                           text="To begin, enter a movie you have watched or like, \nand your desired number of reviews",
-                          font=('Courier New', 25))
+                          font=('Courier New', 25), bg='#3B3B3B', fg='white')
         label2.pack(padx=20, pady=10)
 
-        movie_input1 = tk.Label(self.root, text="Selected Movies", font=('Courier New', 20))
+        movie_input1 = tk.Label(self.root, text="Selected Movies", font=('Courier New', 20), bg='#3B3B3B', fg='white')
         movie_input1.pack()
 
         self.selected_movies_listbox = tk.Listbox(self.root, width=50, height=5, selectmode='single')  # create dropdown
         self.selected_movies_listbox.pack(pady=5)
 
         movie_input2 = tk.Label(self.root, text="Start typing to find your movie, and then click on it.",
-                                font=('Courier New', 20))
+                                font=('Courier New', 20), bg='#3B3B3B', fg='white')
         movie_input2.pack(pady=5)
 
         self.movie_entry = tk.Entry(self.root, font=('Courier New', 20))
@@ -54,7 +55,8 @@ class TkinterApp:
         self.movies = tk.Listbox(self.root, width=50, height=5)
         self.movies.pack(pady=5)
 
-        movie_input3 = tk.Label(self.root, text="Maximum number of recommendations (1-5)", font=('Courier', 20))
+        movie_input3 = tk.Label(self.root, text="Maximum number of recommendations (1-5)", font=('Courier', 20),
+                                bg='#3B3B3B', fg='white')
         movie_input3.pack(pady=5)
 
         self.spinbox = tk.Spinbox(self.root, from_=1, to=5)  # create input for # of reviews
