@@ -10,7 +10,8 @@ from front import TkinterApp
 
 
 if __name__ == "__main__":
+    print("Loading GUI... Please be patient :) The graph is being loaded and clustered.")
     graph = load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv')
     louvain(graph, 3)
-    app = TkinterApp(tk.Tk(), 'data/movies.csv', graph)
+    app = TkinterApp(tk.Tk(), graph)
     app.run()

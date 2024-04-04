@@ -23,7 +23,6 @@ class TkinterApp:
         """Function to create our user interface window. Includes all tkinter widgets."""
         self.graph = graph
         self.selected_movies = set()
-        self.recommendation_number = int
         self.recommendations = []
         self.list_of_movies = list(self.graph.get_movies().keys())
         self.root = window_root
@@ -111,22 +110,19 @@ class TkinterApp:
     def display_recommendations(self, movie_list: list) -> None:
         """Add the recommendations to our GUI"""
         self.movie_recommendations.delete(0, tk.END)
-        for movie in movie_list[0:self.recommendation_number]:
+        for movie in movie_list[:int(self.spinbox.get())]:
             self.movie_recommendations.insert(0, movie)
 
     def recommend_movies(self) -> None:
         """Function to update recommended movies when recommended is pressed
         and reset several visual elements, such as """
-        self.recommendation_number = int(self.spinbox.get())
         self.recommendations = self.graph.get_best_movies(list(self.selected_movies), 5)
+        self.display_recommendations(self.recommendations)
+        visualize_weighted_graph(self.graph, self.recommendations)
         self.movie_entry.delete(0, tk.END)  # clear search bar
         self.selected_movies_listbox.delete(0, tk.END)  # clear selected movies box
         self.selected_movies = set()  # empty selected movies set
-        self.spinbox.delete(0, tk.END)  # clear number of reviews
-        self.spinbox.insert(0, '1')
         self.movies.selection_clear(0, tk.END)  # need to clear selection in movies listbox
-        self.display_recommendations(self.recommendations)
-        visualize_weighted_graph(self.graph, self.recommendations)
 
     def update_selected_movies(self, event: tk.Event = None) -> None:
         """Insert the movies the user selected to our box of selected movies"""

@@ -197,7 +197,7 @@ class Network:
         for community in communities_to_remove:
             self._communities.pop(community)
 
-    def get_best_movies(self, movies: list[Movie], limit: int) -> list[str]:
+    def get_best_movies(self, movies_titles: list[str], limit: int) -> list[str]:
         """Return a maximum length limit of the best _Movie object titles connected to objects in movies
         and in the same community.
 
@@ -207,6 +207,7 @@ class Network:
         pq = PriorityQueue()
         list_of_movies = []
         visited = set()
+        movies = [self._movies[title] for title in movies_titles]
 
         for movie in movies:
             # Should not return itself
