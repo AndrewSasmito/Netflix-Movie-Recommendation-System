@@ -20,8 +20,7 @@ def generate_color_scheme(graph: movie_class.Network) -> dict[str, str]:
         lightness = 0.5  # You can adjust lightness if needed
         saturation = 0.7  # You can adjust saturation if needed
         rgb = colorsys.hls_to_rgb(hue, lightness, saturation)
-        # TODO Put hex_color into an f-string
-        hex_color = '#{:02x}{:02x}{:02x}'.format(int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
+        hex_color = f'#{int(rgb[0] * 255):02x}{int(rgb[1] * 255):02x}{int(rgb[2] * 255):02x}'
         colors[community] = hex_color
         i += 1
 
@@ -134,14 +133,14 @@ if __name__ == '__main__':
     import python_ta
     python_ta.check_all(config={
         'extra-imports': ['movie_class', 'networkx', 'plotly.graph_objs',
-                          'colorsys', 'load_graph', 'clustering'],  # the names (strs) of imported modules
+                          'colorsys'],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
 
-    # graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 1000, 1000000)
+    # graph = load_graph.load_movie_graph('data/shuffled_user_ratings.csv', 'data/movies.csv', 10, 10000)
     # print('a')
     # clustering.louvain(graph, 3)
     # print('b')
-    # visualize_weighted_graph(graph, movies=['Dinosaur Planet', 'Character', "Screamers", 'Sick', '8 Man'])
+    # visualize_weighted_graph(graph, movies=['Dinosaur Planet'])
     # print('C')
