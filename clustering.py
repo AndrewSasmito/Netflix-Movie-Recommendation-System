@@ -97,7 +97,7 @@ def louvain(graph: movie_class.Network, epochs: int) -> None:
     """Modified Louvain's algorithm for community detection. Our algorithm follows phase 1
     of the Louvain's algorithm for a certain number of epochs to assign the movies in a graph
     to communities. Although the resulting graph might result in a lower overall modularity,
-    we insist the size of a community is less than 50, in order to make more balanced calculations
+    we insist the size of a community is less than 25, in order to make more balanced calculations
     with respect to the dataset so the majority of the dataset doesn't fall under a single community."""
     m = m_func(graph)
     for _ in range(epochs):
