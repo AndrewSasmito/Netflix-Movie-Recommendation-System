@@ -1,4 +1,10 @@
-"""A file to run the front end of the movie recommendation system"""
+"""CSC111 Project 2: Netflix Movie Recommendation System
+
+This is the frontend file of the Netflix Movie Recommendation System
+created by Saahil Kapasi, Andrew Sasmito, Fiona Verzivolli, and
+Naoroj Farhan to be submitted for the second CSC111 Project.
+It is responsible for setting up and handling the Tkinter GUI.
+"""
 import tkinter as tk
 from typing import Any
 import movie_class
