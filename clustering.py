@@ -58,7 +58,8 @@ def m_func(graph: movie_class.Network) -> float:
 
 
 def calculate_delta_q(community: list[set[movie_class.Movie] | float], vertex: movie_class.Movie, m: float) -> float:
-    """Used to calculate delta_q"""
+    """Used to calculate delta_q, this is an implementation of the formula given in the paper to
+    efficiently calculate the change in modularity"""
     sum_in = sigma_in(community)
     sum_total = sigma_total(community)
     ki = k_i(vertex)
@@ -68,7 +69,10 @@ def calculate_delta_q(community: list[set[movie_class.Movie] | float], vertex: m
 
 
 def louvain_helper(graph: movie_class.Network, vertex: movie_class.Movie, m: float) -> None:
-    """Helper function to help simplify the Louvain's method."""
+    """Helper function to help simplify the Louvain's method.
+    For a given vertex, iterate over its neighbours and check the modularity gain from assigning
+    a vertex to its neighbors community. If the size of the community is less than 25 and the
+    modularity gain is greater than 0, assign the vertex to its neighbouring community"""
     max_q = 0
     best_community = vertex.community
     for neighbour in vertex.neighbours:
