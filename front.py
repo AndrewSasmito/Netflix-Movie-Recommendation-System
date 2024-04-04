@@ -115,7 +115,7 @@ class TkinterApp:
         and reset several visual elements, such as """
         recommendations = self.graph.get_best_movies(list(self.selected_movies), 5)
         self.display_recommendations(recommendations)
-        visualize_weighted_graph(self.graph, recommendations)
+        visualize_weighted_graph(self.graph, list(self.selected_movies))
         self.movie_entry.delete(0, tk.END)  # clear search bar
         self.selected_movies_listbox.delete(0, tk.END)  # clear selected movies box
         self.selected_movies = set()  # empty selected movies set
