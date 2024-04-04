@@ -9,7 +9,6 @@ class TkinterApp:
     """Class that stores all of our information for the frontend interface.
     This includes the initialization (creating our window and tkinter widgets), as
     well as the methods needed to make our frontend interactive."""
-    recommendations: list[str]
     selected_movies: set
     list_of_movies: list
     root: tk.Tk
@@ -23,7 +22,6 @@ class TkinterApp:
         """Function to create our user interface window. Includes all tkinter widgets."""
         self.graph = graph
         self.selected_movies = set()
-        self.recommendations = []
         self.list_of_movies = list(self.graph.get_movies().keys())
         self.root = window_root
         self.root.configure(background='#3B3B3B')
@@ -116,9 +114,9 @@ class TkinterApp:
     def recommend_movies(self) -> None:
         """Function to update recommended movies when recommended is pressed
         and reset several visual elements, such as """
-        self.recommendations = self.graph.get_best_movies(list(self.selected_movies), 5)
-        self.display_recommendations(self.recommendations)
-        visualize_weighted_graph(self.graph, self.recommendations)
+        recommendations = self.graph.get_best_movies(list(self.selected_movies), 5)
+        self.display_recommendations(recommendations)
+        visualize_weighted_graph(self.graph, recommendations)
         self.movie_entry.delete(0, tk.END)  # clear search bar
         self.selected_movies_listbox.delete(0, tk.END)  # clear selected movies box
         self.selected_movies = set()  # empty selected movies set
