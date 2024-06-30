@@ -49,5 +49,3 @@ This project implements a movie recommendation system that leverages Louvain's A
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or bug reports.
 
 ---
-
-Feel free to adjust any sections as needed!
