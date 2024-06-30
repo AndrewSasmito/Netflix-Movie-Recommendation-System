@@ -1,7 +1,3 @@
-Sure, here’s a more detailed version for your GitHub repository README:
-
----
-
 ## Movie Recommendation System
 
 This project implements a movie recommendation system that leverages Louvain's Algorithm for graph community detection to provide personalized movie suggestions based on user preferences and interactions. 
