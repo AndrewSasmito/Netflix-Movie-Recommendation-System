@@ -1,7 +1,6 @@
 """CSC111 Project 2: Netflix Movie Recommendation System
 
-This is the main file of the Netflix Movie Recommendation System created by Saahil Kapasi, Andrew Sasmito,
-Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
+This is the main file of the Netflix Movie Recommendation System.
 """
 from load_graph import load_movie_graph
 from clustering import louvain

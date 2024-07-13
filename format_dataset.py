@@ -1,7 +1,6 @@
 """CSC111 Project 2: Netflix Movie Recommendation System
 
-This is a file for formatting the reviews dataset of the Netflix Movie Recommendation System created by Saahil Kapasi,
-Andrew Sasmito, Fiona Verzivolli, and Naoroj Farhan to be submitted for the second CSC111 Project.
+This is a file for formatting the reviews dataset of the Netflix Movie Recommendation System.
 """
 import csv
 import random

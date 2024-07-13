@@ -1,8 +1,7 @@
 """CSC111 Project 2: Netflix Movie Recommendation System
 
 This is the file for implementing the clustering functionality
-of the Netflix Movie Recommendation System created by Saahil Kapasi, Andrew Sasmito, Fiona Verzivolli,
-and Naoroj Farhan to be submitted for the second CSC111 Project.
+of the Netflix Movie Recommendation System.
 """
 import movie_class
 
