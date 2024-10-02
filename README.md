@@ -1,5 +1,7 @@
 ## Movie Recommendation System
 
+Project developed by Fiona Verzivolli, Andrew Sasmito, Saahil Kapasi, and Naoroj Farhan.
+
 This project implements a movie recommendation system that leverages Louvain's Algorithm for graph community detection to provide personalized movie suggestions based on user preferences and interactions. 
 
 ### Key Features
